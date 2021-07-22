@@ -47,18 +47,18 @@ import { HPlayer } from 'hcode-player';
 
 const App = () => {
 
-	const [sources, setSources] = useState([
-	    {
-			url: 'https://d2z8nku95gg9lc.cloudfront.net/IN04_CS_Cores_1080.mp4',
-			resolution: '1080p',
-		},{
-			url: 'https://d2z8nku95gg9lc.cloudfront.net/IN04_CS_Cores_720.mp4',
-			resolution: '720p',
-		},{
-			url: 'https://d2z8nku95gg9lc.cloudfront.net/IN04_CS_Cores_360.mp4',
-			resolution: '360p',
-		}
-	]);
+  const [sources, setSources] = useState([
+    {
+      url: 'https://d2z8nku95gg9lc.cloudfront.net/IN04_CS_Cores_1080.mp4',
+      resolution: '1080p',
+    },{
+      url: 'https://d2z8nku95gg9lc.cloudfront.net/IN04_CS_Cores_720.mp4',
+      resolution: '720p',
+    },{
+      url: 'https://d2z8nku95gg9lc.cloudfront.net/IN04_CS_Cores_360.mp4',
+      resolution: '360p',
+    }
+  ]);
 
   return (
     <HPlayer url={sources}>
