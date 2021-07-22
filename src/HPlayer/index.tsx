@@ -515,12 +515,7 @@ const HPlayer = ({
     >
       <video ref={videoRef} controlsList="nodownload" autoPlay={autoPlay}>
         {sources
-          .filter((s) => {
-            console.log('sources', sources);
-            console.log('resolutionSelected', resolutionSelected);
-
-            return s.resolution === resolutionSelected;
-          })
+          .filter((s: HPlayerSource) => s.resolution === resolutionSelected)
           .map((s, index) => (
             <source key={index} src={s.url} type={s.type} />
           ))}
