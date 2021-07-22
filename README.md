@@ -1,5 +1,7 @@
 # Hcode Player with React and Material UI
 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/hcodebr/hcode-player/blob/master/LICENSE) [![npm version](https://img.shields.io/npm/v/material-ui-confirm.svg)](https://www.npmjs.com/package/material-ui-confirm) [![Build Status](https://travis-ci.org/hcodebr/hcode-player.svg?branch=master)](https://travis-ci.org/hcodebr/hcode-player) [![Coverage Status](https://coveralls.io/repos/github/hcodebr/hcode-player/badge.svg?branch=master)](https://coveralls.io/github/hcodebr/hcode-player?branch=master)
+
 Video Player Component made with React and [@material-ui/core](https://material-ui.com/) by [Hcode](https://hcode.com.br).
 
 ## Installation
