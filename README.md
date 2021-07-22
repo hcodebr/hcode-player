@@ -18,7 +18,7 @@ yarn add hcode-player
 
 ## Demo
 
-![Player Screenshot](https://firebasestorage.googleapis.com/v0/b/cobalt-alcove-169202.appspot.com/o/hplayer%2Fhplayer.jpg?alt=media&token=463036a6-30e9-400b-88da-ecfd00e0c354)
+[![Player Screenshot](https://firebasestorage.googleapis.com/v0/b/cobalt-alcove-169202.appspot.com/o/hplayer%2Fhplayer.jpg?alt=media&token=463036a6-30e9-400b-88da-ecfd00e0c354)](https://codesandbox.io/s/wild-silence-bv685?file=/src/App.js)
 
 [![Edit hcode-player demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/wild-silence-bv685?file=/src/App.js)
 
@@ -42,13 +42,12 @@ export default App;
 Player with multiple video resolutions:
 
 ```js
-import React from 'react';
+import React, { useState } from "react";
 import { HPlayer } from 'hcode-player';
 
 const App = () => {
 
-  return (
-    <HPlayer url={[
+	const [sources, setSources] = useState([
 	    {
 			url: 'https://d2z8nku95gg9lc.cloudfront.net/IN04_CS_Cores_1080.mp4',
 			resolution: '1080p',
@@ -59,7 +58,10 @@ const App = () => {
 			url: 'https://d2z8nku95gg9lc.cloudfront.net/IN04_CS_Cores_360.mp4',
 			resolution: '360p',
 		}
-	]}>
+	]);
+
+  return (
+    <HPlayer url={sources}>
   );
 };
 
