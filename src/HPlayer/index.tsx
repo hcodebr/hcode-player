@@ -296,8 +296,6 @@ const HPlayer = ({
     const videoEl = videoRef.current as HTMLVideoElement;
 
     if (videoEl) {
-      console.dir(videoEl);
-
       videoEl.addEventListener('suspend', () => {});
 
       videoEl.addEventListener('stalled', () => {});
