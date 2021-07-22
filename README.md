@@ -1,6 +1,6 @@
 # Hcode Player with React and Material UI
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/hcodebr/hcode-player/blob/master/LICENSE) [![npm version](https://img.shields.io/npm/v/material-ui-confirm.svg)](https://www.npmjs.com/package/material-ui-confirm)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/hcodebr/hcode-player/blob/master/LICENSE) [![npm version](https://img.shields.io/npm/v/hcode-player.svg)](https://www.npmjs.com/package/hcode-player)
 
 Video Player Component made with React and [@material-ui/core](https://material-ui.com/) by [Hcode](https://hcode.com.br).
 
@@ -20,7 +20,7 @@ yarn add hcode-player
 
 ![Player Screenshot](https://firebasestorage.googleapis.com/v0/b/cobalt-alcove-169202.appspot.com/o/hplayer%2Fhplayer.jpg?alt=media&token=463036a6-30e9-400b-88da-ecfd00e0c354)
 
-[![Edit material-ui-confirm demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/wild-silence-bv685?file=/src/App.js)
+[![Edit hcode-player demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/wild-silence-bv685?file=/src/App.js)
 
 ## Usage
 
