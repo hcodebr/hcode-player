@@ -1,5 +1,5 @@
 {
-  "version": "0.0.4",
+  "version": "0.1.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -80,5 +80,19 @@
     "@material-ui/icons": "^4.11.2",
     "hcode-core": "^0.0.62",
     "styled-components": "^5.3.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hcodebr/hcode-player"
+  },
+  "homepage": "https://github.com/hcodebr/hcode-player",
+  "description": "Video Player Component made with React and @material-ui/core by Hcode.",
+  "keywords": [
+    "Material UI",
+    "video",
+    "player",
+    "react",
+    "hcode",
+    "typescript"
+  ]
 }
