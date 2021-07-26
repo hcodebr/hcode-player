@@ -23,7 +23,6 @@ import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 import CloseIcon from '@material-ui/icons/Close';
 import { Fragment, useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { AnyObject, humanSeconds } from 'hcode-core';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import AspectRatioIcon from '@material-ui/icons/AspectRatio';
@@ -176,6 +175,22 @@ const ConfgMenu = styled.div`
     color: #fff;
   }
 `;
+
+export interface AnyObject {
+  [key: string]: any;
+}
+
+export function humanSeconds(seconds: number): string {
+  const date = new Date(seconds * 1000).toISOString();
+
+  if (seconds < 600) {
+    return date.substr(15, 4);
+  } else if (seconds < 3600) {
+    return date.substr(14, 5);
+  } else {
+    return date.substr(11, 8);
+  }
+}
 
 export interface HPlayerConfig {
   userResolutionSelected: string;

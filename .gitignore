@@ -1,5 +1,10 @@
-*.log
-.DS_Store
-node_modules
-.cache
-dist
+# NPM dependencies
+/node_modules
+
+# Code coverage report
+/coverage
+
+# Production
+/dist
+
+npm-debug.log*

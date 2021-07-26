@@ -1,39 +1,28 @@
 {
   "version": "0.1.6",
   "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "build/index.js",
+  "module": "build/index.esm.js",
   "files": [
-    "dist",
-    "src"
+    "build"
   ],
+  "types": "build/index.d.ts",
   "engines": {
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
+    "prebuild": "rimraf build",
+    "build": "rollup -c",
     "postbuild": "npm run new:version",
     "prenew:version": "git add --all && git commit -m publish",
     "new:version": "npm version patch",
-    "test": "tsdx test --passWithNoTests",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "preprod": "npm run build",
     "prod": "npm publish",
-    "postprod": "git push origin master"
-  },
-  "peerDependencies": {
-    "react": ">=16"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
+    "postprod": "git push origin master",
+    "git:push": "git add --all && git commit -m publish && git push origin master",
+    "git:pull": "git fetch --all && git reset --hard origin/master && git pull origin master"
   },
   "prettier": {
     "printWidth": 80,
@@ -43,42 +32,36 @@
   },
   "name": "hcode-player",
   "author": "João Rangel",
-  "module": "dist/hcode-player.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/hcode-player.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/hcode-player.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "devDependencies": {
-    "@babel/core": "^7.14.8",
-    "@size-limit/preset-small-lib": "^5.0.1",
-    "@storybook/addon-essentials": "^6.3.5",
-    "@storybook/addon-info": "^5.3.21",
-    "@storybook/addon-links": "^6.3.5",
-    "@storybook/addons": "^6.3.5",
-    "@storybook/react": "^6.3.5",
+    "@babel/core": "^7.14.6",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.11.2",
+    "@rollup/plugin-commonjs": "^19.0.1",
+    "@rollup/plugin-node-resolve": "^13.0.4",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "@types/styled-components": "^5.1.11",
     "babel-loader": "^8.2.2",
-    "husky": "^7.0.1",
+    "babel-plugin-styled-components": "^1.13.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-is": "^17.0.2",
-    "size-limit": "^5.0.1",
-    "tsdx": "^0.14.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.54.0",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-copy": "^3.3.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.0",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "styled-components": "^5.3.0",
     "tslib": "^2.3.0",
     "typescript": "^4.3.5"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.11.2",
-    "hcode-core": "^0.0.62",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0",
     "styled-components": "^5.3.0"
   },
   "repository": {
