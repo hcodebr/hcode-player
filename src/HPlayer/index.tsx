@@ -322,7 +322,12 @@ const HPlayer = React.forwardRef(
         setOpenRate(false);
       }
     }, [configMenu]);
-    useEffect(() => setSources(getSources(url)), [url]);
+
+    useEffect(() => {
+      console.log('hplayer url', url);
+
+      setSources(getSources(url));
+    }, [url]);
 
     useEffect(() => {
       let resSelected = resolutionSelected;
@@ -345,6 +350,8 @@ const HPlayer = React.forwardRef(
     }, [resolutions]);
 
     useEffect(() => {
+      console.log('sources', sources);
+
       setResolutions(
         removeDuplicates(sources.map((s) => (s.resolution ? s.resolution : '')))
       );
@@ -353,6 +360,17 @@ const HPlayer = React.forwardRef(
 
       if (videoEl) {
         videoEl.currentTime = 0;
+        if (sources.length) {
+          const configs = getConfigs();
+          if (configs && configs.userResolutionSelected) {
+            const source = sources.find(
+              (s) => s.resolution === configs.userResolutionSelected
+            );
+            if (source) {
+              videoEl.src = source.url;
+            }
+          }
+        }
       }
     }, [sources]);
 

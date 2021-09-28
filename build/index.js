@@ -191,7 +191,10 @@ var HPlayer = React__default['default'].forwardRef(function (_a) {
             setOpenRate(false);
         }
     }, [configMenu]);
-    React.useEffect(function () { return setSources(getSources(url)); }, [url]);
+    React.useEffect(function () {
+        console.log('hplayer url', url);
+        setSources(getSources(url));
+    }, [url]);
     React.useEffect(function () {
         var resSelected = resolutionSelected;
         if (!resSelected) {
@@ -208,10 +211,20 @@ var HPlayer = React__default['default'].forwardRef(function (_a) {
         }
     }, [resolutions]);
     React.useEffect(function () {
+        console.log('sources', sources);
         setResolutions(removeDuplicates(sources.map(function (s) { return (s.resolution ? s.resolution : ''); })));
         var videoEl = videoRef.current;
         if (videoEl) {
             videoEl.currentTime = 0;
+            if (sources.length) {
+                var configs_2 = getConfigs();
+                if (configs_2 && configs_2.userResolutionSelected) {
+                    var source = sources.find(function (s) { return s.resolution === configs_2.userResolutionSelected; });
+                    if (source) {
+                        videoEl.src = source.url;
+                    }
+                }
+            }
         }
     }, [sources]);
     React.useEffect(function () {
