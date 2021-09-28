@@ -228,6 +228,15 @@ var HPlayer = React__default['default'].forwardRef(function (_a) {
                         videoEl.play();
                     }
                 }
+                else {
+                    var source = sources[0];
+                    console.log('sources source', source);
+                    if (source) {
+                        videoEl.currentTime = 0;
+                        videoEl.src = source.url;
+                        videoEl.play();
+                    }
+                }
             }
         }
     }, [sources]);
