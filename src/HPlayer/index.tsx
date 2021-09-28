@@ -324,8 +324,6 @@ const HPlayer = React.forwardRef(
     }, [configMenu]);
 
     useEffect(() => {
-      console.log('hplayer url', url);
-
       setSources(getSources(url));
     }, [url]);
 
@@ -350,25 +348,19 @@ const HPlayer = React.forwardRef(
     }, [resolutions]);
 
     useEffect(() => {
-      console.log('sources change', sources);
-
       setResolutions(
         removeDuplicates(sources.map((s) => (s.resolution ? s.resolution : '')))
       );
 
       const videoEl = videoRef.current as HTMLVideoElement;
 
-      console.log('sources videoEl', videoEl);
-
       if (videoEl) {
         if (sources.length) {
           const configs = getConfigs();
-          console.log('sources configs', configs);
           if (configs && configs.userResolutionSelected) {
             const source = sources.find(
               (s) => s.resolution === configs.userResolutionSelected
             );
-            console.log('sources source', source);
 
             if (source) {
               videoEl.currentTime = 0;
@@ -377,7 +369,6 @@ const HPlayer = React.forwardRef(
             }
           } else {
             const source = sources[0];
-            console.log('sources source', source);
             if (source) {
               videoEl.currentTime = 0;
               videoEl.src = source.url;
