@@ -108,8 +108,8 @@ function humanSeconds(seconds) {
         return date.substr(11, 8);
     }
 }
-var HPlayer = function (_a) {
-    var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b;
+var HPlayer = React.forwardRef(function (_a) {
+    var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b, onReady = _a.onReady, onSuspend = _a.onSuspend, onStalled = _a.onStalled, onSeeking = _a.onSeeking, onSeeked = _a.onSeeked, onEnded = _a.onEnded, onError = _a.onError, onCanPlayThrough = _a.onCanPlayThrough, onCanPlay = _a.onCanPlay, onAbort = _a.onAbort, onLoadedData = _a.onLoadedData, onLoadedMetaData = _a.onLoadedMetaData, onPlaying = _a.onPlaying, onLoadStart = _a.onLoadStart, onWaiting = _a.onWaiting, onTimeUpdate = _a.onTimeUpdate, onPlay = _a.onPlay, onPause = _a.onPause, onVolumeChange = _a.onVolumeChange, onDurationChange = _a.onDurationChange, onProgress = _a.onProgress, onRateChange = _a.onRateChange;
     var getSources = function (value) {
         var s = [];
         if (typeof value === 'string') {
@@ -130,7 +130,9 @@ var HPlayer = function (_a) {
     var _d = useState([]), resolutions = _d[0], setResolutions = _d[1];
     var _e = useState(''), resolutionSelected = _e[0], setResolutionSelected = _e[1];
     var _f = useState(1), rateSelected = _f[0], setRateSelected = _f[1];
-    var rates = useState([0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2])[0];
+    var rates = useState([
+        0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,
+    ])[0];
     var _g = useState(true), pause = _g[0], setPause = _g[1];
     var _h = useState(0), currentTime = _h[0], setCurrentTime = _h[1];
     var _j = useState(0), durationTime = _j[0], setDurationTime = _j[1];
@@ -191,39 +193,110 @@ var HPlayer = function (_a) {
         setVideoReady(true);
         var videoEl = videoRef.current;
         if (videoEl) {
-            videoEl.addEventListener('suspend', function () { });
-            videoEl.addEventListener('stalled', function () { });
-            videoEl.addEventListener('seeking', function () { });
-            videoEl.addEventListener('seeked', function () { });
-            videoEl.addEventListener('ended', function () { });
-            videoEl.addEventListener('error', function () { });
-            videoEl.addEventListener('canplaythrough', function () {
-                setDurationTime(videoEl.duration);
+            videoEl.addEventListener('suspend', function (e) {
+                if (typeof onSuspend === 'function') {
+                    onSuspend(e);
+                }
             });
-            videoEl.addEventListener('canplay', function () { });
-            videoEl.addEventListener('abort', function () { });
-            videoEl.addEventListener('loadeddata', function () { });
-            videoEl.addEventListener('loadedmetadata', function () { });
-            videoEl.addEventListener('playing', function () { });
-            videoEl.addEventListener('loadstart', function () { });
-            videoEl.addEventListener('waiting', function () { });
-            videoEl.addEventListener('timeupdate', function () {
+            videoEl.addEventListener('stalled', function (e) {
+                if (typeof onStalled === 'function') {
+                    onStalled(e);
+                }
+            });
+            videoEl.addEventListener('seeking', function (e) {
+                if (typeof onSeeking === 'function') {
+                    onSeeking(e);
+                }
+            });
+            videoEl.addEventListener('seeked', function (e) {
+                if (typeof onSeeked === 'function') {
+                    onSeeked(e);
+                }
+            });
+            videoEl.addEventListener('ended', function (e) {
+                if (typeof onEnded === 'function') {
+                    onEnded(e);
+                }
+            });
+            videoEl.addEventListener('error', function (e) {
+                if (typeof onError === 'function') {
+                    onError(e);
+                }
+            });
+            videoEl.addEventListener('canplaythrough', function (e) {
+                setDurationTime(videoEl.duration);
+                if (typeof onCanPlayThrough === 'function') {
+                    onCanPlayThrough(e);
+                }
+            });
+            videoEl.addEventListener('canplay', function (e) {
+                if (typeof onCanPlay === 'function') {
+                    onCanPlay(e);
+                }
+            });
+            videoEl.addEventListener('abort', function (e) {
+                if (typeof onAbort === 'function') {
+                    onAbort(e);
+                }
+            });
+            videoEl.addEventListener('loadeddata', function (e) {
+                if (typeof onLoadedData === 'function') {
+                    onLoadedData(e);
+                }
+            });
+            videoEl.addEventListener('loadedmetadata', function (e) {
+                if (typeof onLoadedMetaData === 'function') {
+                    onLoadedMetaData(e);
+                }
+            });
+            videoEl.addEventListener('playing', function (e) {
+                if (typeof onPlaying === 'function') {
+                    onPlaying(e);
+                }
+            });
+            videoEl.addEventListener('loadstart', function (e) {
+                if (typeof onLoadStart === 'function') {
+                    onLoadStart(e);
+                }
+            });
+            videoEl.addEventListener('waiting', function (e) {
+                if (typeof onWaiting === 'function') {
+                    onWaiting(e);
+                }
+            });
+            videoEl.addEventListener('timeupdate', function (e) {
                 setCurrentTime(videoEl.currentTime);
                 setProgress((videoEl.currentTime * 100) / videoEl.duration);
+                if (typeof onTimeUpdate === 'function') {
+                    onTimeUpdate(e);
+                }
             });
-            videoEl.addEventListener('play', function () {
+            videoEl.addEventListener('play', function (e) {
                 setPause(false);
+                if (typeof onPlay === 'function') {
+                    onPlay(e);
+                }
             });
-            videoEl.addEventListener('pause', function () {
+            videoEl.addEventListener('pause', function (e) {
                 setPause(true);
+                if (typeof onPause === 'function') {
+                    onPause(e);
+                }
             });
-            videoEl.addEventListener('volumechange', function () {
+            videoEl.addEventListener('volumechange', function (e) {
                 if (videoRef.current) {
                     setVolume(videoEl.volume * 100);
                 }
+                if (typeof onVolumeChange === 'function') {
+                    onVolumeChange(e);
+                }
             });
-            videoEl.addEventListener('durationchange', function () { });
-            videoEl.addEventListener('progress', function () {
+            videoEl.addEventListener('durationchange', function (e) {
+                if (typeof onDurationChange === 'function') {
+                    onDurationChange(e);
+                }
+            });
+            videoEl.addEventListener('progress', function (e) {
                 setCurrentTime(videoEl.currentTime);
                 setProgress((videoEl.currentTime * 100) / videoEl.duration);
                 var duration = videoEl.duration;
@@ -238,15 +311,24 @@ var HPlayer = function (_a) {
                         }
                     }
                 }
+                if (typeof onProgress === 'function') {
+                    onProgress(e);
+                }
             });
-            (_a = videoRef.current) === null || _a === void 0 ? void 0 : _a.addEventListener('ratechange', function () {
+            (_a = videoRef.current) === null || _a === void 0 ? void 0 : _a.addEventListener('ratechange', function (e) {
                 if (rateSelected !== videoEl.playbackRate) {
                     setRateSelected(videoEl.playbackRate);
                     saveConfigs({
                         userRate: videoEl.playbackRate,
                     });
                 }
+                if (typeof onRateChange === 'function') {
+                    onRateChange(e);
+                }
             });
+            if (typeof onReady === 'function') {
+                onReady(videoRef.current);
+            }
         }
     }, [videoRef]);
     var playOrPause = function () {
@@ -422,7 +504,7 @@ var HPlayer = function (_a) {
                             configMenu && React.createElement(CloseIcon, null))),
                     React.createElement(IconButton, { onClick: onClickFullscreen },
                         React.createElement(FullscreenIcon, null))))))));
-};
+});
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12;
 
 export { HPlayer, humanSeconds };

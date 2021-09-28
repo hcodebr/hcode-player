@@ -203,461 +203,599 @@ export interface HPlayerSource {
   resolution?: string;
 }
 
-const HPlayer = ({
-  url,
-  autoPlay = false,
-}: {
-  url: string | HPlayerSource | HPlayerSource[];
-  autoPlay?: boolean;
-}) => {
-  const getSources = (
-    value: string | HPlayerSource | HPlayerSource[]
-  ): HPlayerSource[] => {
-    const s: HPlayerSource[] = [];
+const HPlayer = React.forwardRef(
+  ({
+    url,
+    autoPlay = false,
+    onReady,
+    onSuspend,
+    onStalled,
+    onSeeking,
+    onSeeked,
+    onEnded,
+    onError,
+    onCanPlayThrough,
+    onCanPlay,
+    onAbort,
+    onLoadedData,
+    onLoadedMetaData,
+    onPlaying,
+    onLoadStart,
+    onWaiting,
+    onTimeUpdate,
+    onPlay,
+    onPause,
+    onVolumeChange,
+    onDurationChange,
+    onProgress,
+    onRateChange,
+  }: {
+    url: string | HPlayerSource | HPlayerSource[];
+    autoPlay?: boolean;
+    onReady?: (video: HTMLVideoElement) => {};
+    onSuspend?: (event: any) => {};
+    onStalled?: (event: any) => {};
+    onSeeking?: (event: any) => {};
+    onSeeked?: (event: any) => {};
+    onEnded?: (event: any) => {};
+    onError?: (event: any) => {};
+    onCanPlayThrough?: (event: any) => {};
+    onCanPlay?: (event: any) => {};
+    onAbort?: (event: any) => {};
+    onLoadedData?: (event: any) => {};
+    onLoadedMetaData?: (event: any) => {};
+    onPlaying?: (event: any) => {};
+    onLoadStart?: (event: any) => {};
+    onWaiting?: (event: any) => {};
+    onTimeUpdate?: (event: any) => {};
+    onPlay?: (event: any) => {};
+    onPause?: (event: any) => {};
+    onVolumeChange?: (event: any) => {};
+    onDurationChange?: (event: any) => {};
+    onProgress?: (event: any) => {};
+    onRateChange?: (event: any) => {};
+  }) => {
+    const getSources = (
+      value: string | HPlayerSource | HPlayerSource[]
+    ): HPlayerSource[] => {
+      const s: HPlayerSource[] = [];
 
-    if (typeof value === 'string') {
-      s.push({
-        url: value as string,
-        resolution: '',
-      });
-    } else if (url instanceof Array) {
-      s.push(...(value as HPlayerSource[]));
-    } else {
-      s.push(value as HPlayerSource);
-    }
-
-    return s;
-  };
-
-  const [sources, setSources] = useState<HPlayerSource[]>(getSources(url));
-  const [resolutions, setResolutions] = useState<string[]>([]);
-  const [resolutionSelected, setResolutionSelected] = useState('');
-  const [rateSelected, setRateSelected] = useState<number>(1);
-  const [rates] = useState<number[]>([0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]);
-  const [pause, setPause] = useState(true);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [durationTime, setDurationTime] = useState(0);
-  const [configMenu, setConfigMenu] = useState(false);
-  const [volume, setVolume] = useState(50);
-  const [progressBuffer, setProgressBuffer] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [videoReady, setVideoReady] = useState(false);
-  const [openResolution, setOpenResolution] = useState(false);
-  const [openRate, setOpenRate] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  const removeDuplicates = (arr: any[]) => {
-    var obj: AnyObject = {};
-    var ret_arr = [];
-    for (var i = 0; i < arr.length; i++) {
-      obj[arr[i]] = true;
-    }
-    for (var key in obj) {
-      ret_arr.push(key);
-    }
-    return ret_arr;
-  };
-
-  useEffect(() => {
-    let rate = rateSelected;
-
-    const configs = getConfigs();
-
-    if (configs && configs.userRate && rate !== configs.userRate) {
-      rate = configs.userRate;
-      setRateSelected(configs.userRate);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!configMenu) {
-      setOpenResolution(false);
-      setOpenRate(false);
-    }
-  }, [configMenu]);
-  useEffect(() => setSources(getSources(url)), [url]);
-
-  useEffect(() => {
-    let resSelected = resolutionSelected;
-
-    if (!resSelected) {
-      const configs = getConfigs();
-      if (configs && configs.userResolutionSelected) {
-        if (
-          sources.find((s) => s.resolution === configs.userResolutionSelected)
-        ) {
-          setResolutionSelected(configs.userResolutionSelected);
-          resSelected = configs.userResolutionSelected;
-        }
+      if (typeof value === 'string') {
+        s.push({
+          url: value as string,
+          resolution: '',
+        });
+      } else if (url instanceof Array) {
+        s.push(...(value as HPlayerSource[]));
+      } else {
+        s.push(value as HPlayerSource);
       }
-    }
 
-    if (resolutions.length > 0 && !resSelected) {
-      setResolutionSelected(resolutions[0]);
-    }
-  }, [resolutions]);
+      return s;
+    };
 
-  useEffect(
-    () =>
-      setResolutions(
-        removeDuplicates(sources.map((s) => (s.resolution ? s.resolution : '')))
-      ),
-    [sources]
-  );
+    const [sources, setSources] = useState<HPlayerSource[]>(getSources(url));
+    const [resolutions, setResolutions] = useState<string[]>([]);
+    const [resolutionSelected, setResolutionSelected] = useState('');
+    const [rateSelected, setRateSelected] = useState<number>(1);
+    const [rates] = useState<number[]>([
+      0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,
+    ]);
+    const [pause, setPause] = useState(true);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [durationTime, setDurationTime] = useState(0);
+    const [configMenu, setConfigMenu] = useState(false);
+    const [volume, setVolume] = useState(50);
+    const [progressBuffer, setProgressBuffer] = useState(0);
+    const [progress, setProgress] = useState(0);
+    const [videoReady, setVideoReady] = useState(false);
+    const [openResolution, setOpenResolution] = useState(false);
+    const [openRate, setOpenRate] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    setVideoReady(true);
+    const removeDuplicates = (arr: any[]) => {
+      var obj: AnyObject = {};
+      var ret_arr = [];
+      for (var i = 0; i < arr.length; i++) {
+        obj[arr[i]] = true;
+      }
+      for (var key in obj) {
+        ret_arr.push(key);
+      }
+      return ret_arr;
+    };
 
-    const videoEl = videoRef.current as HTMLVideoElement;
+    useEffect(() => {
+      let rate = rateSelected;
 
-    if (videoEl) {
-      videoEl.addEventListener('suspend', () => {});
+      const configs = getConfigs();
 
-      videoEl.addEventListener('stalled', () => {});
+      if (configs && configs.userRate && rate !== configs.userRate) {
+        rate = configs.userRate;
+        setRateSelected(configs.userRate);
+      }
+    }, []);
 
-      videoEl.addEventListener('seeking', () => {});
+    useEffect(() => {
+      if (!configMenu) {
+        setOpenResolution(false);
+        setOpenRate(false);
+      }
+    }, [configMenu]);
+    useEffect(() => setSources(getSources(url)), [url]);
 
-      videoEl.addEventListener('seeked', () => {});
+    useEffect(() => {
+      let resSelected = resolutionSelected;
 
-      videoEl.addEventListener('ended', () => {});
-
-      videoEl.addEventListener('error', () => {});
-
-      videoEl.addEventListener('canplaythrough', () => {
-        setDurationTime(videoEl.duration);
-      });
-
-      videoEl.addEventListener('canplay', () => {});
-
-      videoEl.addEventListener('abort', () => {});
-
-      videoEl.addEventListener('loadeddata', () => {});
-
-      videoEl.addEventListener('loadedmetadata', () => {});
-
-      videoEl.addEventListener('playing', () => {});
-
-      videoEl.addEventListener('loadstart', () => {});
-
-      videoEl.addEventListener('waiting', () => {});
-
-      videoEl.addEventListener('timeupdate', () => {
-        setCurrentTime(videoEl.currentTime);
-        setProgress((videoEl.currentTime * 100) / videoEl.duration);
-      });
-
-      videoEl.addEventListener('play', () => {
-        setPause(false);
-      });
-
-      videoEl.addEventListener('pause', () => {
-        setPause(true);
-      });
-
-      videoEl.addEventListener('volumechange', () => {
-        if (videoRef.current) {
-          setVolume(videoEl.volume * 100);
-        }
-      });
-
-      videoEl.addEventListener('durationchange', () => {});
-
-      videoEl.addEventListener('progress', () => {
-        setCurrentTime(videoEl.currentTime);
-        setProgress((videoEl.currentTime * 100) / videoEl.duration);
-
-        let duration = videoEl.duration;
-        if (duration > 0) {
-          for (let i = 0; i < videoEl.buffered.length; i++) {
-            if (
-              videoEl.buffered.start(videoEl.buffered.length - 1 - i) <
-              videoEl.currentTime
-            ) {
-              setProgressBuffer(
-                (videoEl.buffered.end(videoEl.buffered.length - 1 - i) /
-                  duration) *
-                  100
-              );
-              break;
-            }
+      if (!resSelected) {
+        const configs = getConfigs();
+        if (configs && configs.userResolutionSelected) {
+          if (
+            sources.find((s) => s.resolution === configs.userResolutionSelected)
+          ) {
+            setResolutionSelected(configs.userResolutionSelected);
+            resSelected = configs.userResolutionSelected;
           }
         }
-      });
+      }
 
-      videoRef.current?.addEventListener('ratechange', () => {
-        if (rateSelected !== videoEl.playbackRate) {
-          setRateSelected(videoEl.playbackRate);
-          saveConfigs({
-            userRate: videoEl.playbackRate,
-          });
-        }
-      });
-    }
-  }, [videoRef]);
+      if (resolutions.length > 0 && !resSelected) {
+        setResolutionSelected(resolutions[0]);
+      }
+    }, [resolutions]);
 
-  const playOrPause = () => {
-    if (videoRef.current?.paused) {
-      videoRef.current?.play();
-    } else {
-      videoRef.current?.pause();
-    }
-  };
+    useEffect(
+      () =>
+        setResolutions(
+          removeDuplicates(
+            sources.map((s) => (s.resolution ? s.resolution : ''))
+          )
+        ),
+      [sources]
+    );
 
-  const onChangeProgress = (_event: any, newValue: number | number[]) => {
-    const value = newValue as number;
-    const videoEl = videoRef.current as HTMLVideoElement;
-    if (videoEl) {
-      videoEl.currentTime = (videoEl.duration * value) / 100;
-    }
-    setProgress(value);
-  };
+    useEffect(() => {
+      setVideoReady(true);
 
-  const onChangeVolume = (_event: any, newValue: number | number[]) => {
-    applyVolume(newValue as number);
-    setVolume(newValue as number);
-  };
+      const videoEl = videoRef.current as HTMLVideoElement;
 
-  const applyVolume = (value: number) => {
-    const videoEl = videoRef.current as HTMLVideoElement;
-    if (videoEl) {
-      videoEl.volume = value / 100;
-    }
-  };
+      if (videoEl) {
+        videoEl.addEventListener('suspend', (e: any) => {
+          if (typeof onSuspend === 'function') {
+            onSuspend(e);
+          }
+        });
 
-  const volumeToggle = () => {
-    if (volume > 0) {
-      setVolume(0);
-      applyVolume(0);
-    } else {
-      setVolume(100);
-      applyVolume(100);
-    }
-  };
+        videoEl.addEventListener('stalled', (e: any) => {
+          if (typeof onStalled === 'function') {
+            onStalled(e);
+          }
+        });
 
-  const onClickPicture = async () => {
-    const videoEl = videoRef.current as any;
-    await videoEl.requestPictureInPicture();
-  };
+        videoEl.addEventListener('seeking', (e: any) => {
+          if (typeof onSeeking === 'function') {
+            onSeeking(e);
+          }
+        });
 
-  const onClickFullscreen = () => {
-    const videoEl = videoRef.current as any;
-    if (videoEl.requestFullscreen) {
-      videoEl.requestFullscreen();
-    } else if (videoEl.mozRequestFullScreen) {
-      videoEl.mozRequestFullScreen();
-    } else if (videoEl.webkitRequestFullscreen) {
-      videoEl.webkitRequestFullscreen();
-    } else if (videoEl.msRequestFullscreen) {
-      videoEl.msRequestFullscreen();
-    }
-  };
+        videoEl.addEventListener('seeked', (e: any) => {
+          if (typeof onSeeked === 'function') {
+            onSeeked(e);
+          }
+        });
 
-  const changeRate = (r: number) => {
-    setRateSelected(r);
-    setConfigMenu(false);
-    saveConfigs({
-      userRate: r,
-    });
+        videoEl.addEventListener('ended', (e: any) => {
+          if (typeof onEnded === 'function') {
+            onEnded(e);
+          }
+        });
 
-    const videoEl = videoRef.current as HTMLVideoElement;
+        videoEl.addEventListener('error', (e: any) => {
+          if (typeof onError === 'function') {
+            onError(e);
+          }
+        });
 
-    if (videoEl) {
-      videoEl.playbackRate = r;
-    }
-  };
+        videoEl.addEventListener('canplaythrough', (e: any) => {
+          setDurationTime(videoEl.duration);
+          if (typeof onCanPlayThrough === 'function') {
+            onCanPlayThrough(e);
+          }
+        });
 
-  const changeResolution = (r: string) => {
-    setResolutionSelected(r);
-    setConfigMenu(false);
-    saveConfigs({
-      userResolutionSelected: r,
-    });
+        videoEl.addEventListener('canplay', (e: any) => {
+          if (typeof onCanPlay === 'function') {
+            onCanPlay(e);
+          }
+        });
 
-    const videoEl = videoRef.current as HTMLVideoElement;
-    if (videoEl) {
-      const { paused, currentTime } = videoEl;
-      const source = sources.find((s) => s.resolution === r);
-      if (source) {
-        videoEl.src = source.url;
-        videoEl.currentTime = currentTime;
-        if (!paused) {
-          videoEl.play();
+        videoEl.addEventListener('abort', (e: any) => {
+          if (typeof onAbort === 'function') {
+            onAbort(e);
+          }
+        });
+
+        videoEl.addEventListener('loadeddata', (e: any) => {
+          if (typeof onLoadedData === 'function') {
+            onLoadedData(e);
+          }
+        });
+
+        videoEl.addEventListener('loadedmetadata', (e: any) => {
+          if (typeof onLoadedMetaData === 'function') {
+            onLoadedMetaData(e);
+          }
+        });
+
+        videoEl.addEventListener('playing', (e: any) => {
+          if (typeof onPlaying === 'function') {
+            onPlaying(e);
+          }
+        });
+
+        videoEl.addEventListener('loadstart', (e: any) => {
+          if (typeof onLoadStart === 'function') {
+            onLoadStart(e);
+          }
+        });
+
+        videoEl.addEventListener('waiting', (e: any) => {
+          if (typeof onWaiting === 'function') {
+            onWaiting(e);
+          }
+        });
+
+        videoEl.addEventListener('timeupdate', (e: any) => {
+          setCurrentTime(videoEl.currentTime);
+          setProgress((videoEl.currentTime * 100) / videoEl.duration);
+          if (typeof onTimeUpdate === 'function') {
+            onTimeUpdate(e);
+          }
+        });
+
+        videoEl.addEventListener('play', (e: any) => {
+          setPause(false);
+          if (typeof onPlay === 'function') {
+            onPlay(e);
+          }
+        });
+
+        videoEl.addEventListener('pause', (e: any) => {
+          setPause(true);
+          if (typeof onPause === 'function') {
+            onPause(e);
+          }
+        });
+
+        videoEl.addEventListener('volumechange', (e: any) => {
+          if (videoRef.current) {
+            setVolume(videoEl.volume * 100);
+          }
+          if (typeof onVolumeChange === 'function') {
+            onVolumeChange(e);
+          }
+        });
+
+        videoEl.addEventListener('durationchange', (e: any) => {
+          if (typeof onDurationChange === 'function') {
+            onDurationChange(e);
+          }
+        });
+
+        videoEl.addEventListener('progress', (e: any) => {
+          setCurrentTime(videoEl.currentTime);
+          setProgress((videoEl.currentTime * 100) / videoEl.duration);
+
+          let duration = videoEl.duration;
+          if (duration > 0) {
+            for (let i = 0; i < videoEl.buffered.length; i++) {
+              if (
+                videoEl.buffered.start(videoEl.buffered.length - 1 - i) <
+                videoEl.currentTime
+              ) {
+                setProgressBuffer(
+                  (videoEl.buffered.end(videoEl.buffered.length - 1 - i) /
+                    duration) *
+                    100
+                );
+                break;
+              }
+            }
+          }
+
+          if (typeof onProgress === 'function') {
+            onProgress(e);
+          }
+        });
+
+        videoRef.current?.addEventListener('ratechange', (e: any) => {
+          if (rateSelected !== videoEl.playbackRate) {
+            setRateSelected(videoEl.playbackRate);
+            saveConfigs({
+              userRate: videoEl.playbackRate,
+            });
+          }
+          if (typeof onRateChange === 'function') {
+            onRateChange(e);
+          }
+        });
+
+        if (typeof onReady === 'function') {
+          onReady(videoRef.current);
         }
       }
-    }
-  };
+    }, [videoRef]);
 
-  const saveConfigs = (configs: {
-    userResolutionSelected?: string;
-    userRate?: number;
-  }) => {
-    if (localStorage) {
-      const current = getConfigs();
-      localStorage.setItem(
-        'hplayer-config',
-        JSON.stringify({
-          ...current,
-          ...configs,
-        } as HPlayerConfig)
-      );
-    }
-  };
+    const playOrPause = () => {
+      if (videoRef.current?.paused) {
+        videoRef.current?.play();
+      } else {
+        videoRef.current?.pause();
+      }
+    };
 
-  const getConfigs = (): HPlayerConfig => {
-    try {
-      const parsed = JSON.parse(String(localStorage.getItem('hplayer-config')));
-      return parsed as HPlayerConfig;
-    } catch (e) {
-      return {
-        userResolutionSelected: '',
-        userRate: 1,
-      } as HPlayerConfig;
-    }
-  };
+    const onChangeProgress = (_event: any, newValue: number | number[]) => {
+      const value = newValue as number;
+      const videoEl = videoRef.current as HTMLVideoElement;
+      if (videoEl) {
+        videoEl.currentTime = (videoEl.duration * value) / 100;
+      }
+      setProgress(value);
+    };
 
-  const onMouseLeaveVideoWrap = () => {
-    if (configMenu) {
+    const onChangeVolume = (_event: any, newValue: number | number[]) => {
+      applyVolume(newValue as number);
+      setVolume(newValue as number);
+    };
+
+    const applyVolume = (value: number) => {
+      const videoEl = videoRef.current as HTMLVideoElement;
+      if (videoEl) {
+        videoEl.volume = value / 100;
+      }
+    };
+
+    const volumeToggle = () => {
+      if (volume > 0) {
+        setVolume(0);
+        applyVolume(0);
+      } else {
+        setVolume(100);
+        applyVolume(100);
+      }
+    };
+
+    const onClickPicture = async () => {
+      const videoEl = videoRef.current as any;
+      await videoEl.requestPictureInPicture();
+    };
+
+    const onClickFullscreen = () => {
+      const videoEl = videoRef.current as any;
+      if (videoEl.requestFullscreen) {
+        videoEl.requestFullscreen();
+      } else if (videoEl.mozRequestFullScreen) {
+        videoEl.mozRequestFullScreen();
+      } else if (videoEl.webkitRequestFullscreen) {
+        videoEl.webkitRequestFullscreen();
+      } else if (videoEl.msRequestFullscreen) {
+        videoEl.msRequestFullscreen();
+      }
+    };
+
+    const changeRate = (r: number) => {
+      setRateSelected(r);
       setConfigMenu(false);
-    }
-  };
+      saveConfigs({
+        userRate: r,
+      });
 
-  return (
-    <VideoWrap
-      className={[configMenu ? 'config-menu-show' : ''].join(' ')}
-      onMouseLeave={onMouseLeaveVideoWrap}
-    >
-      <video ref={videoRef} controlsList="nodownload" autoPlay={autoPlay}>
-        {sources
-          .filter((s: HPlayerSource) => s.resolution === resolutionSelected)
-          .map((s, index) => (
-            <source key={index} src={s.url} type={s.type} />
-          ))}
-      </video>
-      {videoReady && (
-        <Fragment>
-          <ControlsWrap className="controls-wrap" onClick={playOrPause} />
-          <ControlProgress className="controls-progress">
-            <Slider
-              value={progress}
-              onChange={onChangeProgress}
-              aria-labelledby="continuous-slider"
-              step={0.1}
-            />
-            <LinearProgress
-              variant="buffer"
-              value={progress}
-              valueBuffer={progressBuffer}
-            />
-          </ControlProgress>
-          <Controls className="controls">
-            <LeftControls>
-              <IconButton onClick={playOrPause}>
-                {pause && <PlayArrowIcon />}
-                {!pause && <PauseIcon />}
-              </IconButton>
-              <VolumeWrap>
-                <IconButton onClick={volumeToggle}>
-                  {volume === 0 && <VolumeOffIcon />}
-                  {volume > 0 && volume < 100 && <VolumeDownIcon />}
-                  {volume === 100 && <VolumeUpIcon />}
+      const videoEl = videoRef.current as HTMLVideoElement;
+
+      if (videoEl) {
+        videoEl.playbackRate = r;
+      }
+    };
+
+    const changeResolution = (r: string) => {
+      setResolutionSelected(r);
+      setConfigMenu(false);
+      saveConfigs({
+        userResolutionSelected: r,
+      });
+
+      const videoEl = videoRef.current as HTMLVideoElement;
+      if (videoEl) {
+        const { paused, currentTime } = videoEl;
+        const source = sources.find((s) => s.resolution === r);
+        if (source) {
+          videoEl.src = source.url;
+          videoEl.currentTime = currentTime;
+          if (!paused) {
+            videoEl.play();
+          }
+        }
+      }
+    };
+
+    const saveConfigs = (configs: {
+      userResolutionSelected?: string;
+      userRate?: number;
+    }) => {
+      if (localStorage) {
+        const current = getConfigs();
+        localStorage.setItem(
+          'hplayer-config',
+          JSON.stringify({
+            ...current,
+            ...configs,
+          } as HPlayerConfig)
+        );
+      }
+    };
+
+    const getConfigs = (): HPlayerConfig => {
+      try {
+        const parsed = JSON.parse(
+          String(localStorage.getItem('hplayer-config'))
+        );
+        return parsed as HPlayerConfig;
+      } catch (e) {
+        return {
+          userResolutionSelected: '',
+          userRate: 1,
+        } as HPlayerConfig;
+      }
+    };
+
+    const onMouseLeaveVideoWrap = () => {
+      if (configMenu) {
+        setConfigMenu(false);
+      }
+    };
+
+    return (
+      <VideoWrap
+        className={[configMenu ? 'config-menu-show' : ''].join(' ')}
+        onMouseLeave={onMouseLeaveVideoWrap}
+      >
+        <video ref={videoRef} controlsList="nodownload" autoPlay={autoPlay}>
+          {sources
+            .filter((s: HPlayerSource) => s.resolution === resolutionSelected)
+            .map((s, index) => (
+              <source key={index} src={s.url} type={s.type} />
+            ))}
+        </video>
+        {videoReady && (
+          <Fragment>
+            <ControlsWrap className="controls-wrap" onClick={playOrPause} />
+            <ControlProgress className="controls-progress">
+              <Slider
+                value={progress}
+                onChange={onChangeProgress}
+                aria-labelledby="continuous-slider"
+                step={0.1}
+              />
+              <LinearProgress
+                variant="buffer"
+                value={progress}
+                valueBuffer={progressBuffer}
+              />
+            </ControlProgress>
+            <Controls className="controls">
+              <LeftControls>
+                <IconButton onClick={playOrPause}>
+                  {pause && <PlayArrowIcon />}
+                  {!pause && <PauseIcon />}
                 </IconButton>
-                <VolumeSliderWrap className="slider-wrap">
-                  <Slider
-                    value={volume}
-                    onChange={onChangeVolume}
-                    aria-labelledby="continuous-slider"
-                  />
-                </VolumeSliderWrap>
-              </VolumeWrap>
-              <Timer>
-                {humanSeconds(currentTime)} / {humanSeconds(durationTime)}
-              </Timer>
-            </LeftControls>
-            <CenterControls></CenterControls>
-            <RightControls>
-              <IconButton onClick={onClickPicture}>
-                <PictureInPictureAltIcon />
-              </IconButton>
-              <ConfigWrap>
-                <ConfgMenu className="config-menu">
-                  <List component="nav" aria-label="resolutions" dense={true}>
-                    {resolutions.length > 1 && (
-                      <ListItem
-                        button
-                        onClick={() => setOpenResolution(!openResolution)}
+                <VolumeWrap>
+                  <IconButton onClick={volumeToggle}>
+                    {volume === 0 && <VolumeOffIcon />}
+                    {volume > 0 && volume < 100 && <VolumeDownIcon />}
+                    {volume === 100 && <VolumeUpIcon />}
+                  </IconButton>
+                  <VolumeSliderWrap className="slider-wrap">
+                    <Slider
+                      value={volume}
+                      onChange={onChangeVolume}
+                      aria-labelledby="continuous-slider"
+                    />
+                  </VolumeSliderWrap>
+                </VolumeWrap>
+                <Timer>
+                  {humanSeconds(currentTime)} / {humanSeconds(durationTime)}
+                </Timer>
+              </LeftControls>
+              <CenterControls></CenterControls>
+              <RightControls>
+                <IconButton onClick={onClickPicture}>
+                  <PictureInPictureAltIcon />
+                </IconButton>
+                <ConfigWrap>
+                  <ConfgMenu className="config-menu">
+                    <List component="nav" aria-label="resolutions" dense={true}>
+                      {resolutions.length > 1 && (
+                        <ListItem
+                          button
+                          onClick={() => setOpenResolution(!openResolution)}
+                        >
+                          <ListItemIcon>
+                            <AspectRatioIcon color="inherit" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={`Qualidade ${resolutionSelected}`}
+                          />
+                          {openResolution ? <ExpandLess /> : <ExpandMore />}
+                        </ListItem>
+                      )}
+                      <Collapse
+                        in={openResolution}
+                        timeout="auto"
+                        unmountOnExit
                       >
+                        <List component="nav" disablePadding dense={true}>
+                          {resolutions.map((resolution, index) => (
+                            <ListItem
+                              key={index}
+                              button
+                              onClick={() => changeResolution(resolution)}
+                            >
+                              <ListItemIcon>
+                                <Checkbox
+                                  edge="start"
+                                  tabIndex={-1}
+                                  disableRipple
+                                  checked={resolution === resolutionSelected}
+                                  inputProps={{ 'aria-labelledby': '' }}
+                                />
+                              </ListItemIcon>
+                              <ListItemText primary={resolution} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Collapse>
+                      <ListItem button onClick={() => setOpenRate(!openRate)}>
                         <ListItemIcon>
-                          <AspectRatioIcon color="inherit" />
+                          <SlowMotionVideoIcon color="inherit" />
                         </ListItemIcon>
-                        <ListItemText
-                          primary={`Qualidade ${resolutionSelected}`}
-                        />
-                        {openResolution ? <ExpandLess /> : <ExpandMore />}
+                        <ListItemText primary={`Reprodução ${rateSelected}x`} />
+                        {openRate ? <ExpandLess /> : <ExpandMore />}
                       </ListItem>
-                    )}
-                    <Collapse in={openResolution} timeout="auto" unmountOnExit>
-                      <List component="nav" disablePadding dense={true}>
-                        {resolutions.map((resolution, index) => (
-                          <ListItem
-                            key={index}
-                            button
-                            onClick={() => changeResolution(resolution)}
-                          >
-                            <ListItemIcon>
-                              <Checkbox
-                                edge="start"
-                                tabIndex={-1}
-                                disableRipple
-                                checked={resolution === resolutionSelected}
-                                inputProps={{ 'aria-labelledby': '' }}
-                              />
-                            </ListItemIcon>
-                            <ListItemText primary={resolution} />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Collapse>
-                    <ListItem button onClick={() => setOpenRate(!openRate)}>
-                      <ListItemIcon>
-                        <SlowMotionVideoIcon color="inherit" />
-                      </ListItemIcon>
-                      <ListItemText primary={`Reprodução ${rateSelected}x`} />
-                      {openRate ? <ExpandLess /> : <ExpandMore />}
-                    </ListItem>
-                    <Collapse in={openRate} timeout="auto" unmountOnExit>
-                      <List component="nav" disablePadding dense={true}>
-                        {rates.map((rate, index) => (
-                          <ListItem
-                            key={index}
-                            button
-                            onClick={() => changeRate(rate)}
-                            selected={rate === rateSelected}
-                          >
-                            <ListItemText primary={rate} />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Collapse>
-                  </List>
-                </ConfgMenu>
+                      <Collapse in={openRate} timeout="auto" unmountOnExit>
+                        <List component="nav" disablePadding dense={true}>
+                          {rates.map((rate, index) => (
+                            <ListItem
+                              key={index}
+                              button
+                              onClick={() => changeRate(rate)}
+                              selected={rate === rateSelected}
+                            >
+                              <ListItemText primary={rate} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Collapse>
+                    </List>
+                  </ConfgMenu>
 
-                <Button
-                  color="inherit"
-                  onClick={() => setConfigMenu(!configMenu)}
-                >
-                  {!configMenu && <SettingsIcon />}
-                  {configMenu && <CloseIcon />}
-                </Button>
-              </ConfigWrap>
-              <IconButton onClick={onClickFullscreen}>
-                <FullscreenIcon />
-              </IconButton>
-            </RightControls>
-          </Controls>
-        </Fragment>
-      )}
-    </VideoWrap>
-  );
-};
+                  <Button
+                    color="inherit"
+                    onClick={() => setConfigMenu(!configMenu)}
+                  >
+                    {!configMenu && <SettingsIcon />}
+                    {configMenu && <CloseIcon />}
+                  </Button>
+                </ConfigWrap>
+                <IconButton onClick={onClickFullscreen}>
+                  <FullscreenIcon />
+                </IconButton>
+              </RightControls>
+            </Controls>
+          </Fragment>
+        )}
+      </VideoWrap>
+    );
+  }
+);
 
 export default HPlayer;
