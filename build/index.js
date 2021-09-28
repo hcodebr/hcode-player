@@ -211,17 +211,21 @@ var HPlayer = React__default['default'].forwardRef(function (_a) {
         }
     }, [resolutions]);
     React.useEffect(function () {
-        console.log('sources', sources);
+        console.log('sources change', sources);
         setResolutions(removeDuplicates(sources.map(function (s) { return (s.resolution ? s.resolution : ''); })));
         var videoEl = videoRef.current;
+        console.log('sources videoEl', videoEl);
         if (videoEl) {
-            videoEl.currentTime = 0;
             if (sources.length) {
                 var configs_2 = getConfigs();
+                console.log('sources configs', configs_2);
                 if (configs_2 && configs_2.userResolutionSelected) {
                     var source = sources.find(function (s) { return s.resolution === configs_2.userResolutionSelected; });
+                    console.log('sources source', source);
                     if (source) {
+                        videoEl.currentTime = 0;
                         videoEl.src = source.url;
+                        videoEl.play();
                     }
                 }
             }
