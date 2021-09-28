@@ -186,7 +186,11 @@ var HPlayer = React.forwardRef(function (_a) {
         }
     }, [resolutions]);
     useEffect(function () {
-        return setResolutions(removeDuplicates(sources.map(function (s) { return (s.resolution ? s.resolution : ''); })));
+        setResolutions(removeDuplicates(sources.map(function (s) { return (s.resolution ? s.resolution : ''); })));
+        var videoEl = videoRef.current;
+        if (videoEl) {
+            videoEl.currentTime = 0;
+        }
     }, [sources]);
     useEffect(function () {
         var _a;

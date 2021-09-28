@@ -208,7 +208,11 @@ var HPlayer = React__default['default'].forwardRef(function (_a) {
         }
     }, [resolutions]);
     React.useEffect(function () {
-        return setResolutions(removeDuplicates(sources.map(function (s) { return (s.resolution ? s.resolution : ''); })));
+        setResolutions(removeDuplicates(sources.map(function (s) { return (s.resolution ? s.resolution : ''); })));
+        var videoEl = videoRef.current;
+        if (videoEl) {
+            videoEl.currentTime = 0;
+        }
     }, [sources]);
     React.useEffect(function () {
         var _a;

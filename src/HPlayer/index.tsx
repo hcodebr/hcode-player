@@ -344,15 +344,17 @@ const HPlayer = React.forwardRef(
       }
     }, [resolutions]);
 
-    useEffect(
-      () =>
-        setResolutions(
-          removeDuplicates(
-            sources.map((s) => (s.resolution ? s.resolution : ''))
-          )
-        ),
-      [sources]
-    );
+    useEffect(() => {
+      setResolutions(
+        removeDuplicates(sources.map((s) => (s.resolution ? s.resolution : '')))
+      );
+
+      const videoEl = videoRef.current as HTMLVideoElement;
+
+      if (videoEl) {
+        videoEl.currentTime = 0;
+      }
+    }, [sources]);
 
     useEffect(() => {
       setVideoReady(true);
