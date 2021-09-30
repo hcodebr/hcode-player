@@ -207,6 +207,7 @@ const HPlayer = React.forwardRef(
   ({
     url,
     autoPlay = false,
+    poster,
     onReady,
     onSuspend,
     onStalled,
@@ -232,6 +233,7 @@ const HPlayer = React.forwardRef(
   }: {
     url: string | HPlayerSource | HPlayerSource[];
     autoPlay?: boolean;
+    poster?: string;
     onReady?: (video: HTMLVideoElement) => {};
     onSuspend?: (event: any) => {};
     onStalled?: (event: any) => {};
@@ -365,14 +367,18 @@ const HPlayer = React.forwardRef(
             if (source) {
               videoEl.currentTime = 0;
               videoEl.src = source.url;
-              videoEl.play();
+              if (!videoEl.paused || autoPlay) {
+                videoEl.play();
+              }
             }
           } else {
             const source = sources[0];
             if (source) {
               videoEl.currentTime = 0;
               videoEl.src = source.url;
-              videoEl.play();
+              if (!videoEl.paused || autoPlay) {
+                videoEl.play();
+              }
             }
           }
         }
@@ -684,7 +690,7 @@ const HPlayer = React.forwardRef(
         className={[configMenu ? 'config-menu-show' : ''].join(' ')}
         onMouseLeave={onMouseLeaveVideoWrap}
       >
-        <video ref={videoRef} controlsList="nodownload" autoPlay={autoPlay}>
+        <video ref={videoRef} controlsList="nodownload" autoPlay={autoPlay} poster={poster}>
           {sources
             .filter((s: HPlayerSource) => s.resolution === resolutionSelected)
             .map((s, index) => (

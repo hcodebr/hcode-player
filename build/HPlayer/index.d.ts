@@ -15,6 +15,7 @@ export interface HPlayerSource {
 declare const HPlayer: React.ForwardRefExoticComponent<{
     url: string | HPlayerSource | HPlayerSource[];
     autoPlay?: boolean;
+    poster?: string;
     onReady?: (video: HTMLVideoElement) => {};
     onSuspend?: (event: any) => {};
     onStalled?: (event: any) => {};

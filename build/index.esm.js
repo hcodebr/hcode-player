@@ -109,7 +109,7 @@ function humanSeconds(seconds) {
     }
 }
 var HPlayer = React.forwardRef(function (_a) {
-    var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b, onReady = _a.onReady, onSuspend = _a.onSuspend, onStalled = _a.onStalled, onSeeking = _a.onSeeking, onSeeked = _a.onSeeked, onEnded = _a.onEnded, onError = _a.onError, onCanPlayThrough = _a.onCanPlayThrough, onCanPlay = _a.onCanPlay, onAbort = _a.onAbort, onLoadedData = _a.onLoadedData, onLoadedMetaData = _a.onLoadedMetaData, onPlaying = _a.onPlaying, onLoadStart = _a.onLoadStart, onWaiting = _a.onWaiting, onTimeUpdate = _a.onTimeUpdate, onPlay = _a.onPlay, onPause = _a.onPause, onVolumeChange = _a.onVolumeChange, onDurationChange = _a.onDurationChange, onProgress = _a.onProgress, onRateChange = _a.onRateChange;
+    var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b, poster = _a.poster, onReady = _a.onReady, onSuspend = _a.onSuspend, onStalled = _a.onStalled, onSeeking = _a.onSeeking, onSeeked = _a.onSeeked, onEnded = _a.onEnded, onError = _a.onError, onCanPlayThrough = _a.onCanPlayThrough, onCanPlay = _a.onCanPlay, onAbort = _a.onAbort, onLoadedData = _a.onLoadedData, onLoadedMetaData = _a.onLoadedMetaData, onPlaying = _a.onPlaying, onLoadStart = _a.onLoadStart, onWaiting = _a.onWaiting, onTimeUpdate = _a.onTimeUpdate, onPlay = _a.onPlay, onPause = _a.onPause, onVolumeChange = _a.onVolumeChange, onDurationChange = _a.onDurationChange, onProgress = _a.onProgress, onRateChange = _a.onRateChange;
     var getSources = function (value) {
         var s = [];
         if (typeof value === 'string') {
@@ -198,7 +198,9 @@ var HPlayer = React.forwardRef(function (_a) {
                     if (source) {
                         videoEl.currentTime = 0;
                         videoEl.src = source.url;
-                        videoEl.play();
+                        if (!videoEl.paused || autoPlay) {
+                            videoEl.play();
+                        }
                     }
                 }
                 else {
@@ -206,7 +208,9 @@ var HPlayer = React.forwardRef(function (_a) {
                     if (source) {
                         videoEl.currentTime = 0;
                         videoEl.src = source.url;
-                        videoEl.play();
+                        if (!videoEl.paused || autoPlay) {
+                            videoEl.play();
+                        }
                     }
                 }
             }
@@ -474,7 +478,7 @@ var HPlayer = React.forwardRef(function (_a) {
         }
     };
     return (React.createElement(VideoWrap, { className: [configMenu ? 'config-menu-show' : ''].join(' '), onMouseLeave: onMouseLeaveVideoWrap },
-        React.createElement("video", { ref: videoRef, controlsList: "nodownload", autoPlay: autoPlay }, sources
+        React.createElement("video", { ref: videoRef, controlsList: "nodownload", autoPlay: autoPlay, poster: poster }, sources
             .filter(function (s) { return s.resolution === resolutionSelected; })
             .map(function (s, index) { return (React.createElement("source", { key: index, src: s.url, type: s.type })); })),
         videoReady && (React.createElement(Fragment, null,
