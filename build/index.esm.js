@@ -354,7 +354,7 @@ var HPlayer = React.forwardRef(function (_a) {
                     onRateChange(e);
                 }
             });
-            if (typeof onReady === 'function') {
+            if (typeof onReady === 'function' && videoRef.current) {
                 onReady(videoRef.current);
             }
         }

@@ -234,28 +234,28 @@ const HPlayer = React.forwardRef(
     url: string | HPlayerSource | HPlayerSource[];
     autoPlay?: boolean;
     poster?: string;
-    onReady?: (video: HTMLVideoElement) => {};
-    onSuspend?: (event: any) => {};
-    onStalled?: (event: any) => {};
-    onSeeking?: (event: any) => {};
-    onSeeked?: (event: any) => {};
-    onEnded?: (event: any) => {};
-    onError?: (event: any) => {};
-    onCanPlayThrough?: (event: any) => {};
-    onCanPlay?: (event: any) => {};
-    onAbort?: (event: any) => {};
-    onLoadedData?: (event: any) => {};
-    onLoadedMetaData?: (event: any) => {};
-    onPlaying?: (event: any) => {};
-    onLoadStart?: (event: any) => {};
-    onWaiting?: (event: any) => {};
-    onTimeUpdate?: (event: any) => {};
-    onPlay?: (event: any) => {};
-    onPause?: (event: any) => {};
-    onVolumeChange?: (event: any) => {};
-    onDurationChange?: (event: any) => {};
-    onProgress?: (event: any) => {};
-    onRateChange?: (event: any) => {};
+    onReady?: (video: HTMLVideoElement) => void;
+    onSuspend?: (event: any) => void;
+    onStalled?: (event: any) => void;
+    onSeeking?: (event: any) => void;
+    onSeeked?: (event: any) => void;
+    onEnded?: (event: any) => void;
+    onError?: (event: any) => void;
+    onCanPlayThrough?: (event: any) => void;
+    onCanPlay?: (event: any) => void;
+    onAbort?: (event: any) => void;
+    onLoadedData?: (event: any) => void;
+    onLoadedMetaData?: (event: any) => void;
+    onPlaying?: (event: any) => void;
+    onLoadStart?: (event: any) => void;
+    onWaiting?: (event: any) => void;
+    onTimeUpdate?: (event: any) => void;
+    onPlay?: (event: any) => void;
+    onPause?: (event: any) => void;
+    onVolumeChange?: (event: any) => void;
+    onDurationChange?: (event: any) => void;
+    onProgress?: (event: any) => void;
+    onRateChange?: (event: any) => void;
   }) => {
     const getSources = (
       value: string | HPlayerSource | HPlayerSource[]
@@ -551,7 +551,7 @@ const HPlayer = React.forwardRef(
           }
         });
 
-        if (typeof onReady === 'function') {
+        if (typeof onReady === 'function' && videoRef.current) {
           onReady(videoRef.current);
         }
       }
@@ -690,7 +690,12 @@ const HPlayer = React.forwardRef(
         className={[configMenu ? 'config-menu-show' : ''].join(' ')}
         onMouseLeave={onMouseLeaveVideoWrap}
       >
-        <video ref={videoRef} controlsList="nodownload" autoPlay={autoPlay} poster={poster}>
+        <video
+          ref={videoRef}
+          controlsList="nodownload"
+          autoPlay={autoPlay}
+          poster={poster}
+        >
           {sources
             .filter((s: HPlayerSource) => s.resolution === resolutionSelected)
             .map((s, index) => (
