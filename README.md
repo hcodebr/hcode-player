@@ -83,6 +83,26 @@ const App = () => {
 export default App;
 ```
 
+Locale:
+
+```js
+import React from 'react';
+import { HPlayer, HPlayerLocale } from 'hcode-player';
+
+const locale: HPlayerLocale = {
+  quality: 'Qualidade';
+  playbackSpeed: 'Reprodução';
+}
+
+const App = () => {
+  return (
+    <HPlayer autoPlay={true} url="https://d2z8nku95gg9lc.cloudfront.net/IN04_CS_Cores_720.mp4" locale={locale}>
+  );
+};
+
+export default App;
+```
+
 ## License
 
 This project is licensed under the terms of the

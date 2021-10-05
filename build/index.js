@@ -131,7 +131,10 @@ function humanSeconds(seconds) {
     }
 }
 var HPlayer = React__default['default'].forwardRef(function (_a) {
-    var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b, poster = _a.poster, onReady = _a.onReady, onSuspend = _a.onSuspend, onStalled = _a.onStalled, onSeeking = _a.onSeeking, onSeeked = _a.onSeeked, onEnded = _a.onEnded, onError = _a.onError, onCanPlayThrough = _a.onCanPlayThrough, onCanPlay = _a.onCanPlay, onAbort = _a.onAbort, onLoadedData = _a.onLoadedData, onLoadedMetaData = _a.onLoadedMetaData, onPlaying = _a.onPlaying, onLoadStart = _a.onLoadStart, onWaiting = _a.onWaiting, onTimeUpdate = _a.onTimeUpdate, onPlay = _a.onPlay, onPause = _a.onPause, onVolumeChange = _a.onVolumeChange, onDurationChange = _a.onDurationChange, onProgress = _a.onProgress, onRateChange = _a.onRateChange;
+    var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b, poster = _a.poster, onReady = _a.onReady, onSuspend = _a.onSuspend, onStalled = _a.onStalled, onSeeking = _a.onSeeking, onSeeked = _a.onSeeked, onEnded = _a.onEnded, onError = _a.onError, onCanPlayThrough = _a.onCanPlayThrough, onCanPlay = _a.onCanPlay, onAbort = _a.onAbort, onLoadedData = _a.onLoadedData, onLoadedMetaData = _a.onLoadedMetaData, onPlaying = _a.onPlaying, onLoadStart = _a.onLoadStart, onWaiting = _a.onWaiting, onTimeUpdate = _a.onTimeUpdate, onPlay = _a.onPlay, onPause = _a.onPause, onVolumeChange = _a.onVolumeChange, onDurationChange = _a.onDurationChange, onProgress = _a.onProgress, onRateChange = _a.onRateChange, _c = _a.locale, locale = _c === void 0 ? {
+        quality: 'Quality',
+        playbackSpeed: 'Playback speed',
+    } : _c;
     var getSources = function (value) {
         var s = [];
         if (typeof value === 'string') {
@@ -148,23 +151,23 @@ var HPlayer = React__default['default'].forwardRef(function (_a) {
         }
         return s;
     };
-    var _c = React.useState(getSources(url)), sources = _c[0], setSources = _c[1];
-    var _d = React.useState([]), resolutions = _d[0], setResolutions = _d[1];
-    var _e = React.useState(''), resolutionSelected = _e[0], setResolutionSelected = _e[1];
-    var _f = React.useState(1), rateSelected = _f[0], setRateSelected = _f[1];
+    var _d = React.useState(getSources(url)), sources = _d[0], setSources = _d[1];
+    var _e = React.useState([]), resolutions = _e[0], setResolutions = _e[1];
+    var _f = React.useState(''), resolutionSelected = _f[0], setResolutionSelected = _f[1];
+    var _g = React.useState(1), rateSelected = _g[0], setRateSelected = _g[1];
     var rates = React.useState([
         0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,
     ])[0];
-    var _g = React.useState(true), pause = _g[0], setPause = _g[1];
-    var _h = React.useState(0), currentTime = _h[0], setCurrentTime = _h[1];
-    var _j = React.useState(0), durationTime = _j[0], setDurationTime = _j[1];
-    var _k = React.useState(false), configMenu = _k[0], setConfigMenu = _k[1];
-    var _l = React.useState(50), volume = _l[0], setVolume = _l[1];
-    var _m = React.useState(0), progressBuffer = _m[0], setProgressBuffer = _m[1];
-    var _o = React.useState(0), progress = _o[0], setProgress = _o[1];
-    var _p = React.useState(false), videoReady = _p[0], setVideoReady = _p[1];
-    var _q = React.useState(false), openResolution = _q[0], setOpenResolution = _q[1];
-    var _r = React.useState(false), openRate = _r[0], setOpenRate = _r[1];
+    var _h = React.useState(true), pause = _h[0], setPause = _h[1];
+    var _j = React.useState(0), currentTime = _j[0], setCurrentTime = _j[1];
+    var _k = React.useState(0), durationTime = _k[0], setDurationTime = _k[1];
+    var _l = React.useState(false), configMenu = _l[0], setConfigMenu = _l[1];
+    var _m = React.useState(50), volume = _m[0], setVolume = _m[1];
+    var _o = React.useState(0), progressBuffer = _o[0], setProgressBuffer = _o[1];
+    var _p = React.useState(0), progress = _p[0], setProgress = _p[1];
+    var _q = React.useState(false), videoReady = _q[0], setVideoReady = _q[1];
+    var _r = React.useState(false), openResolution = _r[0], setOpenResolution = _r[1];
+    var _s = React.useState(false), openRate = _s[0], setOpenRate = _s[1];
     var videoRef = React.useRef(null);
     var removeDuplicates = function (arr) {
         var obj = {};
@@ -534,7 +537,7 @@ var HPlayer = React__default['default'].forwardRef(function (_a) {
                                 resolutions.length > 1 && (React__default['default'].createElement(core.ListItem, { button: true, onClick: function () { return setOpenResolution(!openResolution); } },
                                     React__default['default'].createElement(core.ListItemIcon, null,
                                         React__default['default'].createElement(AspectRatioIcon__default['default'], { color: "inherit" })),
-                                    React__default['default'].createElement(core.ListItemText, { primary: "Qualidade " + resolutionSelected }),
+                                    React__default['default'].createElement(core.ListItemText, { primary: locale.quality + " " + resolutionSelected }),
                                     openResolution ? React__default['default'].createElement(ExpandLess__default['default'], null) : React__default['default'].createElement(ExpandMore__default['default'], null))),
                                 React__default['default'].createElement(core.Collapse, { in: openResolution, timeout: "auto", unmountOnExit: true },
                                     React__default['default'].createElement(core.List, { component: "nav", disablePadding: true, dense: true }, resolutions.map(function (resolution, index) { return (React__default['default'].createElement(core.ListItem, { key: index, button: true, onClick: function () { return changeResolution(resolution); } },
@@ -544,7 +547,7 @@ var HPlayer = React__default['default'].forwardRef(function (_a) {
                                 React__default['default'].createElement(core.ListItem, { button: true, onClick: function () { return setOpenRate(!openRate); } },
                                     React__default['default'].createElement(core.ListItemIcon, null,
                                         React__default['default'].createElement(SlowMotionVideoIcon__default['default'], { color: "inherit" })),
-                                    React__default['default'].createElement(core.ListItemText, { primary: "Reprodu\u00E7\u00E3o " + rateSelected + "x" }),
+                                    React__default['default'].createElement(core.ListItemText, { primary: locale.playbackSpeed + " " + rateSelected + "x" }),
                                     openRate ? React__default['default'].createElement(ExpandLess__default['default'], null) : React__default['default'].createElement(ExpandMore__default['default'], null)),
                                 React__default['default'].createElement(core.Collapse, { in: openRate, timeout: "auto", unmountOnExit: true },
                                     React__default['default'].createElement(core.List, { component: "nav", disablePadding: true, dense: true }, rates.map(function (rate, index) { return (React__default['default'].createElement(core.ListItem, { key: index, button: true, onClick: function () { return changeRate(rate); }, selected: rate === rateSelected },

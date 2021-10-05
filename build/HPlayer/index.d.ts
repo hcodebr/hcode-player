@@ -12,6 +12,10 @@ export interface HPlayerSource {
     type?: string;
     resolution?: string;
 }
+export interface HPlayerLocale {
+    quality: string;
+    playbackSpeed: string;
+}
 declare const HPlayer: React.ForwardRefExoticComponent<{
     url: string | HPlayerSource | HPlayerSource[];
     autoPlay?: boolean;
@@ -38,5 +42,6 @@ declare const HPlayer: React.ForwardRefExoticComponent<{
     onDurationChange?: (event: any) => void;
     onProgress?: (event: any) => void;
     onRateChange?: (event: any) => void;
+    locale?: HPlayerLocale;
 } & React.RefAttributes<unknown>>;
 export default HPlayer;

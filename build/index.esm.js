@@ -109,7 +109,10 @@ function humanSeconds(seconds) {
     }
 }
 var HPlayer = React.forwardRef(function (_a) {
-    var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b, poster = _a.poster, onReady = _a.onReady, onSuspend = _a.onSuspend, onStalled = _a.onStalled, onSeeking = _a.onSeeking, onSeeked = _a.onSeeked, onEnded = _a.onEnded, onError = _a.onError, onCanPlayThrough = _a.onCanPlayThrough, onCanPlay = _a.onCanPlay, onAbort = _a.onAbort, onLoadedData = _a.onLoadedData, onLoadedMetaData = _a.onLoadedMetaData, onPlaying = _a.onPlaying, onLoadStart = _a.onLoadStart, onWaiting = _a.onWaiting, onTimeUpdate = _a.onTimeUpdate, onPlay = _a.onPlay, onPause = _a.onPause, onVolumeChange = _a.onVolumeChange, onDurationChange = _a.onDurationChange, onProgress = _a.onProgress, onRateChange = _a.onRateChange;
+    var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b, poster = _a.poster, onReady = _a.onReady, onSuspend = _a.onSuspend, onStalled = _a.onStalled, onSeeking = _a.onSeeking, onSeeked = _a.onSeeked, onEnded = _a.onEnded, onError = _a.onError, onCanPlayThrough = _a.onCanPlayThrough, onCanPlay = _a.onCanPlay, onAbort = _a.onAbort, onLoadedData = _a.onLoadedData, onLoadedMetaData = _a.onLoadedMetaData, onPlaying = _a.onPlaying, onLoadStart = _a.onLoadStart, onWaiting = _a.onWaiting, onTimeUpdate = _a.onTimeUpdate, onPlay = _a.onPlay, onPause = _a.onPause, onVolumeChange = _a.onVolumeChange, onDurationChange = _a.onDurationChange, onProgress = _a.onProgress, onRateChange = _a.onRateChange, _c = _a.locale, locale = _c === void 0 ? {
+        quality: 'Quality',
+        playbackSpeed: 'Playback speed',
+    } : _c;
     var getSources = function (value) {
         var s = [];
         if (typeof value === 'string') {
@@ -126,23 +129,23 @@ var HPlayer = React.forwardRef(function (_a) {
         }
         return s;
     };
-    var _c = useState(getSources(url)), sources = _c[0], setSources = _c[1];
-    var _d = useState([]), resolutions = _d[0], setResolutions = _d[1];
-    var _e = useState(''), resolutionSelected = _e[0], setResolutionSelected = _e[1];
-    var _f = useState(1), rateSelected = _f[0], setRateSelected = _f[1];
+    var _d = useState(getSources(url)), sources = _d[0], setSources = _d[1];
+    var _e = useState([]), resolutions = _e[0], setResolutions = _e[1];
+    var _f = useState(''), resolutionSelected = _f[0], setResolutionSelected = _f[1];
+    var _g = useState(1), rateSelected = _g[0], setRateSelected = _g[1];
     var rates = useState([
         0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,
     ])[0];
-    var _g = useState(true), pause = _g[0], setPause = _g[1];
-    var _h = useState(0), currentTime = _h[0], setCurrentTime = _h[1];
-    var _j = useState(0), durationTime = _j[0], setDurationTime = _j[1];
-    var _k = useState(false), configMenu = _k[0], setConfigMenu = _k[1];
-    var _l = useState(50), volume = _l[0], setVolume = _l[1];
-    var _m = useState(0), progressBuffer = _m[0], setProgressBuffer = _m[1];
-    var _o = useState(0), progress = _o[0], setProgress = _o[1];
-    var _p = useState(false), videoReady = _p[0], setVideoReady = _p[1];
-    var _q = useState(false), openResolution = _q[0], setOpenResolution = _q[1];
-    var _r = useState(false), openRate = _r[0], setOpenRate = _r[1];
+    var _h = useState(true), pause = _h[0], setPause = _h[1];
+    var _j = useState(0), currentTime = _j[0], setCurrentTime = _j[1];
+    var _k = useState(0), durationTime = _k[0], setDurationTime = _k[1];
+    var _l = useState(false), configMenu = _l[0], setConfigMenu = _l[1];
+    var _m = useState(50), volume = _m[0], setVolume = _m[1];
+    var _o = useState(0), progressBuffer = _o[0], setProgressBuffer = _o[1];
+    var _p = useState(0), progress = _p[0], setProgress = _p[1];
+    var _q = useState(false), videoReady = _q[0], setVideoReady = _q[1];
+    var _r = useState(false), openResolution = _r[0], setOpenResolution = _r[1];
+    var _s = useState(false), openRate = _s[0], setOpenRate = _s[1];
     var videoRef = useRef(null);
     var removeDuplicates = function (arr) {
         var obj = {};
@@ -512,7 +515,7 @@ var HPlayer = React.forwardRef(function (_a) {
                                 resolutions.length > 1 && (React.createElement(ListItem, { button: true, onClick: function () { return setOpenResolution(!openResolution); } },
                                     React.createElement(ListItemIcon, null,
                                         React.createElement(AspectRatioIcon, { color: "inherit" })),
-                                    React.createElement(ListItemText, { primary: "Qualidade " + resolutionSelected }),
+                                    React.createElement(ListItemText, { primary: locale.quality + " " + resolutionSelected }),
                                     openResolution ? React.createElement(ExpandLess, null) : React.createElement(ExpandMore, null))),
                                 React.createElement(Collapse, { in: openResolution, timeout: "auto", unmountOnExit: true },
                                     React.createElement(List, { component: "nav", disablePadding: true, dense: true }, resolutions.map(function (resolution, index) { return (React.createElement(ListItem, { key: index, button: true, onClick: function () { return changeResolution(resolution); } },
@@ -522,7 +525,7 @@ var HPlayer = React.forwardRef(function (_a) {
                                 React.createElement(ListItem, { button: true, onClick: function () { return setOpenRate(!openRate); } },
                                     React.createElement(ListItemIcon, null,
                                         React.createElement(SlowMotionVideoIcon, { color: "inherit" })),
-                                    React.createElement(ListItemText, { primary: "Reprodu\u00E7\u00E3o " + rateSelected + "x" }),
+                                    React.createElement(ListItemText, { primary: locale.playbackSpeed + " " + rateSelected + "x" }),
                                     openRate ? React.createElement(ExpandLess, null) : React.createElement(ExpandMore, null)),
                                 React.createElement(Collapse, { in: openRate, timeout: "auto", unmountOnExit: true },
                                     React.createElement(List, { component: "nav", disablePadding: true, dense: true }, rates.map(function (rate, index) { return (React.createElement(ListItem, { key: index, button: true, onClick: function () { return changeRate(rate); }, selected: rate === rateSelected },

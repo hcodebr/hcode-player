@@ -203,6 +203,11 @@ export interface HPlayerSource {
   resolution?: string;
 }
 
+export interface HPlayerLocale {
+  quality: string;
+  playbackSpeed: string;
+}
+
 const HPlayer = React.forwardRef(
   ({
     url,
@@ -230,6 +235,10 @@ const HPlayer = React.forwardRef(
     onDurationChange,
     onProgress,
     onRateChange,
+    locale = {
+      quality: 'Quality',
+      playbackSpeed: 'Playback speed',
+    },
   }: {
     url: string | HPlayerSource | HPlayerSource[];
     autoPlay?: boolean;
@@ -256,6 +265,7 @@ const HPlayer = React.forwardRef(
     onDurationChange?: (event: any) => void;
     onProgress?: (event: any) => void;
     onRateChange?: (event: any) => void;
+    locale?: HPlayerLocale;
   }) => {
     const getSources = (
       value: string | HPlayerSource | HPlayerSource[]
@@ -759,7 +769,7 @@ const HPlayer = React.forwardRef(
                             <AspectRatioIcon color="inherit" />
                           </ListItemIcon>
                           <ListItemText
-                            primary={`Qualidade ${resolutionSelected}`}
+                            primary={`${locale.quality} ${resolutionSelected}`}
                           />
                           {openResolution ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
@@ -794,7 +804,9 @@ const HPlayer = React.forwardRef(
                         <ListItemIcon>
                           <SlowMotionVideoIcon color="inherit" />
                         </ListItemIcon>
-                        <ListItemText primary={`Reprodução ${rateSelected}x`} />
+                        <ListItemText
+                          primary={`${locale.playbackSpeed} ${rateSelected}x`}
+                        />
                         {openRate ? <ExpandLess /> : <ExpandMore />}
                       </ListItem>
                       <Collapse in={openRate} timeout="auto" unmountOnExit>
@@ -813,7 +825,6 @@ const HPlayer = React.forwardRef(
                       </Collapse>
                     </List>
                   </ConfgMenu>
-
                   <Button
                     color="inherit"
                     onClick={() => setConfigMenu(!configMenu)}
