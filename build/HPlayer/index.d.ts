@@ -6,6 +6,7 @@ export declare function humanSeconds(seconds: number): string;
 export interface HPlayerConfig {
     userResolutionSelected: string;
     userRate: number;
+    volume: number;
 }
 export interface HPlayerSource {
     url: string;
@@ -16,6 +17,7 @@ export interface HPlayerLocale {
     quality: string;
     playbackSpeed: string;
 }
+export declare function isTouchDevice(): boolean;
 declare const HPlayer: React.ForwardRefExoticComponent<{
     url: string | HPlayerSource | HPlayerSource[];
     autoPlay?: boolean;

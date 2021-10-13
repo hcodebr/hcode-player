@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, Fragment } from 'react';
-import styled from 'styled-components';
-import { Slider, LinearProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Collapse, Checkbox, Button } from '@material-ui/core';
+import { Slider, LinearProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Collapse, Checkbox, Drawer, Button } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -9,11 +8,14 @@ import PauseIcon from '@material-ui/icons/Pause';
 import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
+import VolumeMuteIcon from '@material-ui/icons/VolumeMute';
 import CloseIcon from '@material-ui/icons/Close';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import AspectRatioIcon from '@material-ui/icons/AspectRatio';
 import SlowMotionVideoIcon from '@material-ui/icons/SlowMotionVideo';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import styled from 'styled-components';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -84,18 +86,42 @@ function __makeTemplateObject(cooked, raw) {
     return cooked;
 }
 
-var VideoWrap = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  position: relative;\n  width: 100%;\n  z-index: 1;\n  overflow: hidden;\n  .controls-progress {\n    opacity: 0;\n  }\n  .controls-wrap {\n    opacity: 0;\n    background: linear-gradient(\n      180deg,\n      rgba(0, 0, 0, 0) 66%,\n      rgba(0, 0, 0, 1) 100%\n    );\n  }\n  .controls {\n    transform: translateY(64px);\n  }\n  &.config-menu-show {\n    .config-menu {\n      opacity: 1;\n      transform: translateY(0);\n    }\n  }\n  &:hover {\n    .controls-progress {\n      opacity: 1;\n    }\n    .controls-wrap {\n      opacity: 1;\n    }\n    .controls {\n      transform: translateY(0);\n    }\n  }\n  video {\n    width: 100%;\n  }\n"], ["\n  position: relative;\n  width: 100%;\n  z-index: 1;\n  overflow: hidden;\n  .controls-progress {\n    opacity: 0;\n  }\n  .controls-wrap {\n    opacity: 0;\n    background: linear-gradient(\n      180deg,\n      rgba(0, 0, 0, 0) 66%,\n      rgba(0, 0, 0, 1) 100%\n    );\n  }\n  .controls {\n    transform: translateY(64px);\n  }\n  &.config-menu-show {\n    .config-menu {\n      opacity: 1;\n      transform: translateY(0);\n    }\n  }\n  &:hover {\n    .controls-progress {\n      opacity: 1;\n    }\n    .controls-wrap {\n      opacity: 1;\n    }\n    .controls {\n      transform: translateY(0);\n    }\n  }\n  video {\n    width: 100%;\n  }\n"])));
-var ControlsWrap = styled.div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  position: absolute;\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-end;\n  width: 100%;\n  bottom: 0;\n  z-index: 2;\n  height: 100%;\n"], ["\n  position: absolute;\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-end;\n  width: 100%;\n  bottom: 0;\n  z-index: 2;\n  height: 100%;\n"])));
-var Controls = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  position: absolute;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  min-height: 64px;\n  width: 100%;\n  bottom: 0;\n  z-index: 3;\n  color: #fff;\n  .MuiIconButton-root {\n    color: #fff;\n  }\n"], ["\n  position: absolute;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  min-height: 64px;\n  width: 100%;\n  bottom: 0;\n  z-index: 3;\n  color: #fff;\n  .MuiIconButton-root {\n    color: #fff;\n  }\n"])));
-var LeftControls = styled.div(templateObject_4 || (templateObject_4 = __makeTemplateObject(["\n  display: flex;\n  justify-content: flex-start;\n  align-items: center;\n"], ["\n  display: flex;\n  justify-content: flex-start;\n  align-items: center;\n"])));
-var CenterControls = styled.div(templateObject_5 || (templateObject_5 = __makeTemplateObject(["\n  flex-grow: 1;\n"], ["\n  flex-grow: 1;\n"])));
-var RightControls = styled.div(templateObject_6 || (templateObject_6 = __makeTemplateObject(["\n  display: flex;\n  justify-content: flex-end;\n  align-items: center;\n"], ["\n  display: flex;\n  justify-content: flex-end;\n  align-items: center;\n"])));
-var Timer = styled.div(templateObject_7 || (templateObject_7 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  padding: 10px;\n"], ["\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  padding: 10px;\n"])));
-var VolumeWrap = styled.div(templateObject_8 || (templateObject_8 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  .slider-wrap {\n    overflow: hidden;\n    width: 0;\n    display: flex;\n    align-items: center;\n    min-height: 64px;\n  }\n  &:hover {\n    .slider-wrap {\n      padding: 0 20px;\n      width: 140px;\n    }\n  }\n"], ["\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  .slider-wrap {\n    overflow: hidden;\n    width: 0;\n    display: flex;\n    align-items: center;\n    min-height: 64px;\n  }\n  &:hover {\n    .slider-wrap {\n      padding: 0 20px;\n      width: 140px;\n    }\n  }\n"])));
-var VolumeSliderWrap = styled.div(templateObject_9 || (templateObject_9 = __makeTemplateObject([""], [""])));
-var ControlProgress = styled.div(templateObject_10 || (templateObject_10 = __makeTemplateObject(["\n  position: absolute;\n  min-height: 96px;\n  width: calc(100% - 40px);\n  padding: 10px 20px;\n  bottom: 0;\n  z-index: 3;\n  > span {\n    position: absolute;\n    z-index: 5;\n  }\n  > div {\n    position: absolute;\n    width: 100%;\n    top: 22px;\n    z-index: 4;\n  }\n"], ["\n  position: absolute;\n  min-height: 96px;\n  width: calc(100% - 40px);\n  padding: 10px 20px;\n  bottom: 0;\n  z-index: 3;\n  > span {\n    position: absolute;\n    z-index: 5;\n  }\n  > div {\n    position: absolute;\n    width: 100%;\n    top: 22px;\n    z-index: 4;\n  }\n"])));
-var ConfigWrap = styled.div(templateObject_11 || (templateObject_11 = __makeTemplateObject(["\n  position: relative;\n"], ["\n  position: relative;\n"])));
-var ConfgMenu = styled.div(templateObject_12 || (templateObject_12 = __makeTemplateObject(["\n  position: absolute;\n  bottom: 32px;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n  opacity: 0;\n  transform: translateY(200px);\n  .MuiListItem-button {\n    text-align: right;\n  }\n  svg {\n    color: #fff;\n  }\n"], ["\n  position: absolute;\n  bottom: 32px;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n  opacity: 0;\n  transform: translateY(200px);\n  .MuiListItem-button {\n    text-align: right;\n  }\n  svg {\n    color: #fff;\n  }\n"])));
+var ControlsTouch = styled.div(templateObject_1$b || (templateObject_1$b = __makeTemplateObject(["\n  display: none;\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: calc(100% - 54px);\n  z-index: 3;\n  &.touch {\n    opacity: 0;\n    justify-content: center;\n    align-items: center;\n    button {\n      svg {\n        width: 64px;\n        height: 64px;\n        color: #fff;\n      }\n    }\n    &.show {\n      display: flex;\n      opacity: 1;\n    }\n  }\n"], ["\n  display: none;\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: calc(100% - 54px);\n  z-index: 3;\n  &.touch {\n    opacity: 0;\n    justify-content: center;\n    align-items: center;\n    button {\n      svg {\n        width: 64px;\n        height: 64px;\n        color: #fff;\n      }\n    }\n    &.show {\n      display: flex;\n      opacity: 1;\n    }\n  }\n"])));
+var templateObject_1$b;
+
+var Controls = styled.div(templateObject_1$a || (templateObject_1$a = __makeTemplateObject(["\n  position: absolute;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  min-height: 64px;\n  width: 100%;\n  bottom: 0;\n  z-index: 3;\n  color: #fff;\n  .MuiIconButton-root {\n    color: #fff;\n  }\n  button {\n    transition: all 0.2s ease-in-out;\n    &:hover {\n      transform: scale(1.25);\n    }\n    &::active,\n    &:focus {\n      transform: scale(1.1);\n    }\n  }\n  &.touch {\n    opacity: 0;\n    &.show {\n      opacity: 1;\n    }\n  }\n"], ["\n  position: absolute;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  min-height: 64px;\n  width: 100%;\n  bottom: 0;\n  z-index: 3;\n  color: #fff;\n  .MuiIconButton-root {\n    color: #fff;\n  }\n  button {\n    transition: all 0.2s ease-in-out;\n    &:hover {\n      transform: scale(1.25);\n    }\n    &::active,\n    &:focus {\n      transform: scale(1.1);\n    }\n  }\n  &.touch {\n    opacity: 0;\n    &.show {\n      opacity: 1;\n    }\n  }\n"])));
+var templateObject_1$a;
+
+var LeftControls = styled.div(templateObject_1$9 || (templateObject_1$9 = __makeTemplateObject(["\n  display: flex;\n  justify-content: flex-start;\n  align-items: center;\n  &.touch {\n    .playOrPause {\n      display: none;\n    }\n  }\n"], ["\n  display: flex;\n  justify-content: flex-start;\n  align-items: center;\n  &.touch {\n    .playOrPause {\n      display: none;\n    }\n  }\n"])));
+var templateObject_1$9;
+
+var VolumeWrap = styled.div(templateObject_1$8 || (templateObject_1$8 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  .slider-wrap {\n    overflow: hidden;\n    width: 0;\n    display: flex;\n    align-items: center;\n    min-height: 64px;\n  }\n  &:hover {\n    .slider-wrap {\n      padding: 0 20px;\n      width: 140px;\n    }\n  }\n  &.touch {\n    display: none;\n  }\n"], ["\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  .slider-wrap {\n    overflow: hidden;\n    width: 0;\n    display: flex;\n    align-items: center;\n    min-height: 64px;\n  }\n  &:hover {\n    .slider-wrap {\n      padding: 0 20px;\n      width: 140px;\n    }\n  }\n  &.touch {\n    display: none;\n  }\n"])));
+var templateObject_1$8;
+
+var ControlsWrap = styled.div(templateObject_1$7 || (templateObject_1$7 = __makeTemplateObject(["\n  transition: all 0.2s ease-in-out;\n  position: absolute;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100%;\n  top: -4px;\n  z-index: 2;\n  height: 100%;\n  &.touch {\n    height: calc(100% - 10px);\n    button {\n      svg {\n        width: 64px;\n        height: 64px;\n        color: #fff;\n      }\n    }\n  }\n"], ["\n  transition: all 0.2s ease-in-out;\n  position: absolute;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100%;\n  top: -4px;\n  z-index: 2;\n  height: 100%;\n  &.touch {\n    height: calc(100% - 10px);\n    button {\n      svg {\n        width: 64px;\n        height: 64px;\n        color: #fff;\n      }\n    }\n  }\n"])));
+var templateObject_1$7;
+
+var VideoWrap = styled.div(templateObject_1$6 || (templateObject_1$6 = __makeTemplateObject(["\n  position: relative;\n  width: 100%;\n  z-index: 1;\n  overflow: hidden;\n  transition: all 0.2s ease-in-out;\n  .controls-progress {\n    opacity: 0;\n  }\n  .controls-wrap {\n    opacity: 0;\n    background: linear-gradient(\n      180deg,\n      rgba(0, 0, 0, 0) 66%,\n      rgba(0, 0, 0, 1) 100%\n    );\n  }\n  .controls {\n    transform: translateY(64px);\n  }\n  &.config-menu-show {\n    .config-menu {\n      opacity: 1;\n      transform: translateY(0);\n    }\n  }\n  &:hover,\n  &.paused {\n    .controls-progress {\n      opacity: 1;\n    }\n    .controls-wrap {\n      opacity: 1;\n    }\n    .controls {\n      transform: translateY(0);\n      z-index: 10;\n    }\n  }\n  video {\n    width: 100%;\n  }\n  &.touch {\n    padding-bottom: 10px;\n    &:hover {\n      .controls-wrap {\n        opacity: 0;\n      }\n    }\n    .controls-wrap {\n      opacity: 0;\n    }\n    &.show {\n      .controls-wrap {\n        opacity: 1;\n        background: rgba(0, 0, 0, 0.3);\n      }\n    }\n    .controls {\n      transform: translateY(-8px);\n    }\n  }\n"], ["\n  position: relative;\n  width: 100%;\n  z-index: 1;\n  overflow: hidden;\n  transition: all 0.2s ease-in-out;\n  .controls-progress {\n    opacity: 0;\n  }\n  .controls-wrap {\n    opacity: 0;\n    background: linear-gradient(\n      180deg,\n      rgba(0, 0, 0, 0) 66%,\n      rgba(0, 0, 0, 1) 100%\n    );\n  }\n  .controls {\n    transform: translateY(64px);\n  }\n  &.config-menu-show {\n    .config-menu {\n      opacity: 1;\n      transform: translateY(0);\n    }\n  }\n  &:hover,\n  &.paused {\n    .controls-progress {\n      opacity: 1;\n    }\n    .controls-wrap {\n      opacity: 1;\n    }\n    .controls {\n      transform: translateY(0);\n      z-index: 10;\n    }\n  }\n  video {\n    width: 100%;\n  }\n  &.touch {\n    padding-bottom: 10px;\n    &:hover {\n      .controls-wrap {\n        opacity: 0;\n      }\n    }\n    .controls-wrap {\n      opacity: 0;\n    }\n    &.show {\n      .controls-wrap {\n        opacity: 1;\n        background: rgba(0, 0, 0, 0.3);\n      }\n    }\n    .controls {\n      transform: translateY(-8px);\n    }\n  }\n"])));
+var templateObject_1$6;
+
+var ControlProgress = styled.div(templateObject_1$5 || (templateObject_1$5 = __makeTemplateObject(["\n  position: absolute;\n  min-height: 96px;\n  width: calc(100% - 40px);\n  padding: 10px 20px;\n  bottom: 0;\n  z-index: 10;\n  > span {\n    position: absolute;\n    z-index: 5;\n    width: calc(100% - 40px);\n  }\n  > div {\n    position: absolute;\n    width: calc(100% - 40px);\n    top: 22px;\n    z-index: 4;\n  }\n  &.touch {\n    min-height: initial;\n    width: 100%;\n    padding: 0;\n    bottom: 35px;\n    > span {\n      width: 100%;\n      .MuiSlider-track {\n        z-index: 2;\n      }\n    }\n    > div {\n      width: 100%;\n      top: 19px;\n      height: 4px;\n    }\n  }\n"], ["\n  position: absolute;\n  min-height: 96px;\n  width: calc(100% - 40px);\n  padding: 10px 20px;\n  bottom: 0;\n  z-index: 10;\n  > span {\n    position: absolute;\n    z-index: 5;\n    width: calc(100% - 40px);\n  }\n  > div {\n    position: absolute;\n    width: calc(100% - 40px);\n    top: 22px;\n    z-index: 4;\n  }\n  &.touch {\n    min-height: initial;\n    width: 100%;\n    padding: 0;\n    bottom: 35px;\n    > span {\n      width: 100%;\n      .MuiSlider-track {\n        z-index: 2;\n      }\n    }\n    > div {\n      width: 100%;\n      top: 19px;\n      height: 4px;\n    }\n  }\n"])));
+var templateObject_1$5;
+
+var Timer = styled.div(templateObject_1$4 || (templateObject_1$4 = __makeTemplateObject(["\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  padding: 10px;\n"], ["\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  padding: 10px;\n"])));
+var templateObject_1$4;
+
+var CenterControls = styled.div(templateObject_1$3 || (templateObject_1$3 = __makeTemplateObject(["\n  flex-grow: 1;\n"], ["\n  flex-grow: 1;\n"])));
+var templateObject_1$3;
+
+var RightControls = styled.div(templateObject_1$2 || (templateObject_1$2 = __makeTemplateObject(["\n  display: flex;\n  justify-content: flex-end;\n  align-items: center;\n"], ["\n  display: flex;\n  justify-content: flex-end;\n  align-items: center;\n"])));
+var templateObject_1$2;
+
+var ConfigWrap = styled.div(templateObject_1$1 || (templateObject_1$1 = __makeTemplateObject(["\n  position: relative;\n"], ["\n  position: relative;\n"])));
+var templateObject_1$1;
+
+var ConfigMenu = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  position: absolute;\n  bottom: 32px;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n  opacity: 0;\n  min-width: 220px;\n  transform: translateY(200px);\n  .MuiListItem-button {\n    text-align: right;\n  }\n  svg {\n    color: #fff;\n  }\n  .MuiTypography-colorTextSecondary {\n    color: #fff;\n    font-size: 12px;\n  }\n"], ["\n  position: absolute;\n  bottom: 32px;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n  opacity: 0;\n  min-width: 220px;\n  transform: translateY(200px);\n  .MuiListItem-button {\n    text-align: right;\n  }\n  svg {\n    color: #fff;\n  }\n  .MuiTypography-colorTextSecondary {\n    color: #fff;\n    font-size: 12px;\n  }\n"])));
+var templateObject_1;
+
 function humanSeconds(seconds) {
     var date = new Date(seconds * 1000).toISOString();
     if (seconds < 600) {
@@ -107,6 +133,11 @@ function humanSeconds(seconds) {
     else {
         return date.substr(11, 8);
     }
+}
+function isTouchDevice() {
+    return ('ontouchstart' in window ||
+        navigator.maxTouchPoints > 0 ||
+        navigator.msMaxTouchPoints > 0);
 }
 var HPlayer = React.forwardRef(function (_a) {
     var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b, poster = _a.poster, onReady = _a.onReady, onSuspend = _a.onSuspend, onStalled = _a.onStalled, onSeeking = _a.onSeeking, onSeeked = _a.onSeeked, onEnded = _a.onEnded, onError = _a.onError, onCanPlayThrough = _a.onCanPlayThrough, onCanPlay = _a.onCanPlay, onAbort = _a.onAbort, onLoadedData = _a.onLoadedData, onLoadedMetaData = _a.onLoadedMetaData, onPlaying = _a.onPlaying, onLoadStart = _a.onLoadStart, onWaiting = _a.onWaiting, onTimeUpdate = _a.onTimeUpdate, onPlay = _a.onPlay, onPause = _a.onPause, onVolumeChange = _a.onVolumeChange, onDurationChange = _a.onDurationChange, onProgress = _a.onProgress, onRateChange = _a.onRateChange, _c = _a.locale, locale = _c === void 0 ? {
@@ -130,23 +161,37 @@ var HPlayer = React.forwardRef(function (_a) {
         return s;
     };
     var _d = useState(getSources(url)), sources = _d[0], setSources = _d[1];
-    var _e = useState([]), resolutions = _e[0], setResolutions = _e[1];
-    var _f = useState(''), resolutionSelected = _f[0], setResolutionSelected = _f[1];
-    var _g = useState(1), rateSelected = _g[0], setRateSelected = _g[1];
+    var _e = useState(true), autoHideControls = _e[0], setAutoHideControls = _e[1];
+    var _f = useState(false), showControls = _f[0], setShowControls = _f[1];
+    var _g = useState(false), touchDevice = _g[0], setTouchDevice = _g[1];
+    var _h = useState([]), resolutions = _h[0], setResolutions = _h[1];
+    var _j = useState(''), resolutionSelected = _j[0], setResolutionSelected = _j[1];
+    var _k = useState(1), rateSelected = _k[0], setRateSelected = _k[1];
     var rates = useState([
-        0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,
+        0.25,
+        0.5,
+        0.75,
+        1,
+        1.25,
+        1.5,
+        1.75,
+        2,
     ])[0];
-    var _h = useState(true), pause = _h[0], setPause = _h[1];
-    var _j = useState(0), currentTime = _j[0], setCurrentTime = _j[1];
-    var _k = useState(0), durationTime = _k[0], setDurationTime = _k[1];
-    var _l = useState(false), configMenu = _l[0], setConfigMenu = _l[1];
-    var _m = useState(50), volume = _m[0], setVolume = _m[1];
-    var _o = useState(0), progressBuffer = _o[0], setProgressBuffer = _o[1];
-    var _p = useState(0), progress = _p[0], setProgress = _p[1];
-    var _q = useState(false), videoReady = _q[0], setVideoReady = _q[1];
-    var _r = useState(false), openResolution = _r[0], setOpenResolution = _r[1];
-    var _s = useState(false), openRate = _s[0], setOpenRate = _s[1];
+    var _l = useState(false), fullscreen = _l[0], setFullscreen = _l[1];
+    var _m = useState(true), pause = _m[0], setPause = _m[1];
+    var _o = useState(0), currentTime = _o[0], setCurrentTime = _o[1];
+    var _p = useState(0), durationTime = _p[0], setDurationTime = _p[1];
+    var _q = useState(false), configMenu = _q[0], setConfigMenu = _q[1];
+    var _r = useState(false), configMenuTouch = _r[0], setConfigMenuTouch = _r[1];
+    var _s = useState(50), volume = _s[0], setVolume = _s[1];
+    var _t = useState(0), progressBuffer = _t[0], setProgressBuffer = _t[1];
+    var _u = useState(0), progress = _u[0], setProgress = _u[1];
+    var _v = useState(false), videoReady = _v[0], setVideoReady = _v[1];
+    var _w = useState(false), openResolution = _w[0], setOpenResolution = _w[1];
+    var _x = useState(false), openRate = _x[0], setOpenRate = _x[1];
+    var refWrap = useRef(null);
     var videoRef = useRef(null);
+    var timerControlsRef = useRef(null);
     var removeDuplicates = function (arr) {
         var obj = {};
         var ret_arr = [];
@@ -159,19 +204,57 @@ var HPlayer = React.forwardRef(function (_a) {
         return ret_arr;
     };
     useEffect(function () {
+        if (showControls && autoHideControls && videoRef.current) {
+            if (timerControlsRef.current) {
+                clearTimeout(timerControlsRef.current);
+            }
+            timerControlsRef.current = setTimeout(function () {
+                if (timerControlsRef.current) {
+                    clearTimeout(timerControlsRef.current);
+                }
+                if (!videoRef.current.paused && configMenu) {
+                    setShowControls(false);
+                }
+            }, 2500);
+        }
+    }, [showControls, autoHideControls, videoRef]);
+    useEffect(function () {
+        setTouchDevice(isTouchDevice());
         var rate = rateSelected;
         var configs = getConfigs();
         if (configs && configs.userRate && rate !== configs.userRate) {
             rate = configs.userRate;
             setRateSelected(configs.userRate);
         }
+        if (configs && configs.volume && volume !== configs.volume) {
+            setVolume(configs.volume);
+        }
     }, []);
+    useEffect(function () {
+        if (touchDevice && videoRef.current) {
+            var progressEl = document.querySelector('.controls-progress');
+            if (progressEl) {
+                progressEl.style.opacity = "1";
+            }
+            setShowControls(true);
+        }
+    }, [touchDevice, videoRef]);
     useEffect(function () {
         if (!configMenu) {
             setOpenResolution(false);
             setOpenRate(false);
         }
     }, [configMenu]);
+    useEffect(function () {
+        if (openResolution) {
+            setOpenRate(false);
+        }
+    }, [openResolution]);
+    useEffect(function () {
+        if (openRate) {
+            setOpenResolution(false);
+        }
+    }, [openRate]);
     useEffect(function () {
         setSources(getSources(url));
     }, [url]);
@@ -190,6 +273,18 @@ var HPlayer = React.forwardRef(function (_a) {
             setResolutionSelected(resolutions[0]);
         }
     }, [resolutions]);
+    useEffect(function () {
+        if (refWrap.current) {
+            refWrap.current.addEventListener('fullscreenchange', function (e) {
+                if (document.fullscreenElement) {
+                    setFullscreen(true);
+                }
+                else {
+                    setFullscreen(false);
+                }
+            });
+        }
+    }, [refWrap]);
     useEffect(function () {
         setResolutions(removeDuplicates(sources.map(function (s) { return (s.resolution ? s.resolution : ''); })));
         var videoEl = videoRef.current;
@@ -304,17 +399,25 @@ var HPlayer = React.forwardRef(function (_a) {
             });
             videoEl.addEventListener('play', function (e) {
                 setPause(false);
+                setAutoHideControls(true);
+                setConfigMenu(false);
+                setShowControls(false);
                 if (typeof onPlay === 'function') {
                     onPlay(e);
                 }
             });
             videoEl.addEventListener('pause', function (e) {
                 setPause(true);
+                setAutoHideControls(false);
+                setShowControls(true);
                 if (typeof onPause === 'function') {
                     onPause(e);
                 }
             });
             videoEl.addEventListener('volumechange', function (e) {
+                saveConfigs({
+                    volume: videoEl.volume * 100,
+                });
                 if (videoRef.current) {
                     setVolume(videoEl.volume * 100);
                 }
@@ -413,23 +516,29 @@ var HPlayer = React.forwardRef(function (_a) {
         });
     }); };
     var onClickFullscreen = function () {
-        var videoEl = videoRef.current;
-        if (videoEl.requestFullscreen) {
-            videoEl.requestFullscreen();
+        var el = refWrap.current;
+        if (!document.fullscreenElement) {
+            if (el.requestFullscreen) {
+                el.requestFullscreen();
+            }
+            else if (el.mozRequestFullScreen) {
+                el.mozRequestFullScreen();
+            }
+            else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen();
+            }
+            else if (el.msRequestFullscreen) {
+                el.msRequestFullscreen();
+            }
         }
-        else if (videoEl.mozRequestFullScreen) {
-            videoEl.mozRequestFullScreen();
-        }
-        else if (videoEl.webkitRequestFullscreen) {
-            videoEl.webkitRequestFullscreen();
-        }
-        else if (videoEl.msRequestFullscreen) {
-            videoEl.msRequestFullscreen();
+        else {
+            document.exitFullscreen();
         }
     };
     var changeRate = function (r) {
         setRateSelected(r);
         setConfigMenu(false);
+        setConfigMenuTouch(false);
         saveConfigs({
             userRate: r,
         });
@@ -441,6 +550,7 @@ var HPlayer = React.forwardRef(function (_a) {
     var changeResolution = function (r) {
         setResolutionSelected(r);
         setConfigMenu(false);
+        setConfigMenuTouch(false);
         saveConfigs({
             userResolutionSelected: r,
         });
@@ -472,35 +582,69 @@ var HPlayer = React.forwardRef(function (_a) {
             return {
                 userResolutionSelected: '',
                 userRate: 1,
+                volume: 50,
             };
         }
     };
     var onMouseLeaveVideoWrap = function () {
-        if (configMenu) {
-            setConfigMenu(false);
+        if (!touchDevice) {
+            if (configMenu) {
+                setConfigMenu(false);
+            }
         }
     };
-    return (React.createElement(VideoWrap, { className: [configMenu ? 'config-menu-show' : ''].join(' '), onMouseLeave: onMouseLeaveVideoWrap },
+    return (React.createElement(VideoWrap, { ref: refWrap, className: [
+            configMenu ? 'config-menu-show' : '',
+            touchDevice ? 'touch' : '',
+            showControls ? 'show' : '',
+            pause ? 'paused' : '',
+        ].join(' '), onMouseLeave: onMouseLeaveVideoWrap },
         React.createElement("video", { ref: videoRef, controlsList: "nodownload", autoPlay: autoPlay, poster: poster }, sources
             .filter(function (s) { return s.resolution === resolutionSelected; })
             .map(function (s, index) { return (React.createElement("source", { key: index, src: s.url, type: s.type })); })),
         videoReady && (React.createElement(Fragment, null,
-            React.createElement(ControlsWrap, { className: "controls-wrap", onClick: playOrPause }),
-            React.createElement(ControlProgress, { className: "controls-progress" },
-                React.createElement(Slider, { value: progress, onChange: onChangeProgress, "aria-labelledby": "continuous-slider", step: 0.1 }),
+            React.createElement(ControlsWrap, { className: [
+                    'controls-wrap',
+                    touchDevice ? 'touch' : '',
+                    showControls ? 'show' : '',
+                ].join(' '), onClick: function () {
+                    if (!touchDevice) {
+                        playOrPause();
+                    }
+                    else {
+                        setShowControls(true);
+                    }
+                } }),
+            React.createElement(ControlProgress, { className: ['controls-progress', touchDevice ? 'touch' : ''].join(' ') },
+                React.createElement(Slider, { value: progress, onChange: onChangeProgress, "aria-labelledby": "discrete-slider", step: 0.1 }),
                 React.createElement(LinearProgress, { variant: "buffer", value: progress, valueBuffer: progressBuffer })),
-            React.createElement(Controls, { className: "controls" },
-                React.createElement(LeftControls, null,
-                    React.createElement(IconButton, { onClick: playOrPause },
+            React.createElement(ControlsTouch, { className: [
+                    'controls',
+                    showControls ? 'show' : '',
+                    touchDevice ? 'touch' : '',
+                ].join(' '), onClick: function () {
+                    setShowControls(true);
+                } },
+                React.createElement(IconButton, { onClick: playOrPause },
+                    pause && React.createElement(PlayArrowIcon, null),
+                    !pause && React.createElement(PauseIcon, null))),
+            React.createElement(Controls, { className: [
+                    'controls',
+                    touchDevice ? 'touch' : '',
+                    showControls ? 'show' : '',
+                ].join(' ') },
+                React.createElement(LeftControls, { className: [touchDevice ? 'touch' : ''].join(' ') },
+                    React.createElement(IconButton, { onClick: playOrPause, className: "playOrPause" },
                         pause && React.createElement(PlayArrowIcon, null),
                         !pause && React.createElement(PauseIcon, null)),
-                    React.createElement(VolumeWrap, null,
+                    React.createElement(VolumeWrap, { className: [touchDevice ? 'touch' : ''].join(' ') },
                         React.createElement(IconButton, { onClick: volumeToggle },
                             volume === 0 && React.createElement(VolumeOffIcon, null),
-                            volume > 0 && volume < 100 && React.createElement(VolumeDownIcon, null),
-                            volume === 100 && React.createElement(VolumeUpIcon, null)),
-                        React.createElement(VolumeSliderWrap, { className: "slider-wrap" },
-                            React.createElement(Slider, { value: volume, onChange: onChangeVolume, "aria-labelledby": "continuous-slider" }))),
+                            volume > 0 && volume < 33 && React.createElement(VolumeMuteIcon, null),
+                            volume > 33 && volume < 66 && React.createElement(VolumeDownIcon, null),
+                            volume > 66 && volume <= 100 && React.createElement(VolumeUpIcon, null)),
+                        React.createElement("div", { className: "slider-wrap" },
+                            React.createElement(Slider, { value: volume, onChange: onChangeVolume, "aria-labelledby": "continuous-slider", min: 0, max: 100 }))),
                     React.createElement(Timer, null,
                         humanSeconds(currentTime),
                         " / ",
@@ -510,12 +654,12 @@ var HPlayer = React.forwardRef(function (_a) {
                     React.createElement(IconButton, { onClick: onClickPicture },
                         React.createElement(PictureInPictureAltIcon, null)),
                     React.createElement(ConfigWrap, null,
-                        React.createElement(ConfgMenu, { className: "config-menu" },
+                        React.createElement(ConfigMenu, { className: "config-menu" },
                             React.createElement(List, { component: "nav", "aria-label": "resolutions", dense: true },
                                 resolutions.length > 1 && (React.createElement(ListItem, { button: true, onClick: function () { return setOpenResolution(!openResolution); } },
                                     React.createElement(ListItemIcon, null,
                                         React.createElement(AspectRatioIcon, { color: "inherit" })),
-                                    React.createElement(ListItemText, { primary: locale.quality + " " + resolutionSelected }),
+                                    React.createElement(ListItemText, { primary: locale.quality, secondary: resolutionSelected }),
                                     openResolution ? React.createElement(ExpandLess, null) : React.createElement(ExpandMore, null))),
                                 React.createElement(Collapse, { in: openResolution, timeout: "auto", unmountOnExit: true },
                                     React.createElement(List, { component: "nav", disablePadding: true, dense: true }, resolutions.map(function (resolution, index) { return (React.createElement(ListItem, { key: index, button: true, onClick: function () { return changeResolution(resolution); } },
@@ -525,18 +669,43 @@ var HPlayer = React.forwardRef(function (_a) {
                                 React.createElement(ListItem, { button: true, onClick: function () { return setOpenRate(!openRate); } },
                                     React.createElement(ListItemIcon, null,
                                         React.createElement(SlowMotionVideoIcon, { color: "inherit" })),
-                                    React.createElement(ListItemText, { primary: locale.playbackSpeed + " " + rateSelected + "x" }),
+                                    React.createElement(ListItemText, { primary: locale.playbackSpeed, secondary: rateSelected + "x" }),
                                     openRate ? React.createElement(ExpandLess, null) : React.createElement(ExpandMore, null)),
                                 React.createElement(Collapse, { in: openRate, timeout: "auto", unmountOnExit: true },
                                     React.createElement(List, { component: "nav", disablePadding: true, dense: true }, rates.map(function (rate, index) { return (React.createElement(ListItem, { key: index, button: true, onClick: function () { return changeRate(rate); }, selected: rate === rateSelected },
                                         React.createElement(ListItemText, { primary: rate }))); }))))),
-                        React.createElement(Button, { color: "inherit", onClick: function () { return setConfigMenu(!configMenu); } },
+                        React.createElement(Drawer, { anchor: "bottom", open: configMenuTouch, onClose: function () { return setConfigMenuTouch(false); } },
+                            React.createElement(List, { component: "nav", "aria-label": "resolutions", dense: false },
+                                resolutions.length > 1 && (React.createElement(ListItem, { button: true, onClick: function () { return setOpenResolution(!openResolution); } },
+                                    React.createElement(ListItemIcon, null,
+                                        React.createElement(AspectRatioIcon, { color: "inherit" })),
+                                    React.createElement(ListItemText, { primary: locale.quality, secondary: resolutionSelected }),
+                                    openResolution ? React.createElement(ExpandLess, null) : React.createElement(ExpandMore, null))),
+                                React.createElement(Collapse, { in: openResolution, timeout: "auto", unmountOnExit: true },
+                                    React.createElement(List, { component: "nav", disablePadding: true, dense: false }, resolutions.map(function (resolution, index) { return (React.createElement(ListItem, { key: index, button: true, onClick: function () { return changeResolution(resolution); } },
+                                        React.createElement(ListItemIcon, null,
+                                            React.createElement(Checkbox, { edge: "start", tabIndex: -1, disableRipple: true, checked: resolution === resolutionSelected, inputProps: { 'aria-labelledby': '' } })),
+                                        React.createElement(ListItemText, { primary: resolution }))); }))),
+                                React.createElement(ListItem, { button: true, onClick: function () { return setOpenRate(!openRate); } },
+                                    React.createElement(ListItemIcon, null,
+                                        React.createElement(SlowMotionVideoIcon, { color: "inherit" })),
+                                    React.createElement(ListItemText, { primary: locale.playbackSpeed, secondary: rateSelected + "x" }),
+                                    openRate ? React.createElement(ExpandLess, null) : React.createElement(ExpandMore, null)),
+                                React.createElement(Collapse, { in: openRate, timeout: "auto", unmountOnExit: true },
+                                    React.createElement(List, { component: "nav", disablePadding: true, dense: false }, rates.map(function (rate, index) { return (React.createElement(ListItem, { key: index, button: true, onClick: function () { return changeRate(rate); }, selected: rate === rateSelected },
+                                        React.createElement(ListItemText, { primary: rate }))); }))))),
+                        React.createElement(Button, { color: "inherit", onClick: function () {
+                                if (touchDevice) {
+                                    setConfigMenuTouch(!configMenuTouch);
+                                }
+                                else {
+                                    setConfigMenu(!configMenu);
+                                }
+                            } },
                             !configMenu && React.createElement(SettingsIcon, null),
                             configMenu && React.createElement(CloseIcon, null))),
-                    React.createElement(IconButton, { onClick: onClickFullscreen },
-                        React.createElement(FullscreenIcon, null))))))));
+                    React.createElement(IconButton, { onClick: onClickFullscreen }, !fullscreen ? React.createElement(FullscreenIcon, null) : React.createElement(FullscreenExitIcon, null))))))));
 });
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12;
 
-export { HPlayer, humanSeconds };
+export { HPlayer, humanSeconds, isTouchDevice };
 //# sourceMappingURL=index.esm.js.map

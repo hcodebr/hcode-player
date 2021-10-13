@@ -1,5 +1,5 @@
 {
-  "version": "0.1.16",
+  "version": "0.2.0",
   "license": "MIT",
   "main": "build/index.js",
   "module": "build/index.esm.js",
@@ -38,6 +38,12 @@
     "@material-ui/icons": "^4.11.2",
     "@rollup/plugin-commonjs": "^19.0.1",
     "@rollup/plugin-node-resolve": "^13.0.4",
+    "@storybook/addon-essentials": "^6.3.10",
+    "@storybook/addon-info": "^5.3.21",
+    "@storybook/addon-links": "^6.3.10",
+    "@storybook/addons": "^6.3.10",
+    "@storybook/react": "^6.3.10",
+    "@storybook/theming": "^6.3.10",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "@types/styled-components": "^5.1.11",
@@ -53,6 +59,7 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-plugin-typescript2": "^0.30.0",
+    "storybook-addon-material-ui": "^0.9.0-alpha.24",
     "styled-components": "^5.3.0",
     "tslib": "^2.3.0",
     "typescript": "^4.3.5"

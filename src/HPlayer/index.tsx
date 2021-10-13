@@ -11,6 +11,7 @@ import {
   Checkbox,
   Slider,
   Collapse,
+  Drawer,
 } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
@@ -20,6 +21,7 @@ import PauseIcon from '@material-ui/icons/Pause';
 import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
+import VolumeMuteIcon from '@material-ui/icons/VolumeMute';
 import CloseIcon from '@material-ui/icons/Close';
 import { Fragment, useRef, useState } from 'react';
 import { useEffect } from 'react';
@@ -27,154 +29,19 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import AspectRatioIcon from '@material-ui/icons/AspectRatio';
 import SlowMotionVideoIcon from '@material-ui/icons/SlowMotionVideo';
-
-const VideoWrap = styled.div`
-  position: relative;
-  width: 100%;
-  z-index: 1;
-  overflow: hidden;
-  .controls-progress {
-    opacity: 0;
-  }
-  .controls-wrap {
-    opacity: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0) 66%,
-      rgba(0, 0, 0, 1) 100%
-    );
-  }
-  .controls {
-    transform: translateY(64px);
-  }
-  &.config-menu-show {
-    .config-menu {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  &:hover {
-    .controls-progress {
-      opacity: 1;
-    }
-    .controls-wrap {
-      opacity: 1;
-    }
-    .controls {
-      transform: translateY(0);
-    }
-  }
-  video {
-    width: 100%;
-  }
-`;
-
-const ControlsWrap = styled.div`
-  position: absolute;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  width: 100%;
-  bottom: 0;
-  z-index: 2;
-  height: 100%;
-`;
-
-const Controls = styled.div`
-  position: absolute;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 64px;
-  width: 100%;
-  bottom: 0;
-  z-index: 3;
-  color: #fff;
-  .MuiIconButton-root {
-    color: #fff;
-  }
-`;
-
-const LeftControls = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-`;
-
-const CenterControls = styled.div`
-  flex-grow: 1;
-`;
-
-const RightControls = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-`;
-
-const Timer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-`;
-
-const VolumeWrap = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .slider-wrap {
-    overflow: hidden;
-    width: 0;
-    display: flex;
-    align-items: center;
-    min-height: 64px;
-  }
-  &:hover {
-    .slider-wrap {
-      padding: 0 20px;
-      width: 140px;
-    }
-  }
-`;
-
-const VolumeSliderWrap = styled.div``;
-
-const ControlProgress = styled.div`
-  position: absolute;
-  min-height: 96px;
-  width: calc(100% - 40px);
-  padding: 10px 20px;
-  bottom: 0;
-  z-index: 3;
-  > span {
-    position: absolute;
-    z-index: 5;
-  }
-  > div {
-    position: absolute;
-    width: 100%;
-    top: 22px;
-    z-index: 4;
-  }
-`;
-
-const ConfigWrap = styled.div`
-  position: relative;
-`;
-const ConfgMenu = styled.div`
-  position: absolute;
-  bottom: 32px;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transform: translateY(200px);
-  .MuiListItem-button {
-    text-align: right;
-  }
-  svg {
-    color: #fff;
-  }
-`;
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import ControlsTouch from '../styled/ControlsTouch';
+import Controls from '../styled/Controls';
+import LeftControls from '../styled/LeftControls';
+import VolumeWrap from '../styled/VolumeWrap';
+import ControlsWrap from '../styled/ControlsWrap';
+import VideoWrap from '../styled/VideoWrap';
+import ControlProgress from '../styled/ControlProgress';
+import Timer from '../styled/Timer';
+import CenterControls from '../styled/CenterControls';
+import RightControls from '../styled/RightControls';
+import ConfigWrap from '../styled/ConfigWrap';
+import ConfigMenu from '../styled/ConfigMenu';
 
 export interface AnyObject {
   [key: string]: any;
@@ -195,6 +62,7 @@ export function humanSeconds(seconds: number): string {
 export interface HPlayerConfig {
   userResolutionSelected: string;
   userRate: number;
+  volume: number;
 }
 
 export interface HPlayerSource {
@@ -206,6 +74,14 @@ export interface HPlayerSource {
 export interface HPlayerLocale {
   quality: string;
   playbackSpeed: string;
+}
+
+export function isTouchDevice() {
+  return (
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0 ||
+    (navigator as any).msMaxTouchPoints > 0
+  );
 }
 
 const HPlayer = React.forwardRef(
@@ -287,23 +163,37 @@ const HPlayer = React.forwardRef(
     };
 
     const [sources, setSources] = useState<HPlayerSource[]>(getSources(url));
+    const [autoHideControls, setAutoHideControls] = useState(true);
+    const [showControls, setShowControls] = useState(false);
+    const [touchDevice, setTouchDevice] = useState(false);
     const [resolutions, setResolutions] = useState<string[]>([]);
     const [resolutionSelected, setResolutionSelected] = useState('');
     const [rateSelected, setRateSelected] = useState<number>(1);
     const [rates] = useState<number[]>([
-      0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,
+      0.25,
+      0.5,
+      0.75,
+      1,
+      1.25,
+      1.5,
+      1.75,
+      2,
     ]);
+    const [fullscreen, setFullscreen] = useState(false);
     const [pause, setPause] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const [durationTime, setDurationTime] = useState(0);
     const [configMenu, setConfigMenu] = useState(false);
+    const [configMenuTouch, setConfigMenuTouch] = useState(false);
     const [volume, setVolume] = useState(50);
     const [progressBuffer, setProgressBuffer] = useState(0);
     const [progress, setProgress] = useState(0);
     const [videoReady, setVideoReady] = useState(false);
     const [openResolution, setOpenResolution] = useState(false);
     const [openRate, setOpenRate] = useState(false);
+    const refWrap = useRef<HTMLDivElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const timerControlsRef = useRef<NodeJS.Timeout>(null);
 
     const removeDuplicates = (arr: any[]) => {
       var obj: AnyObject = {};
@@ -318,6 +208,24 @@ const HPlayer = React.forwardRef(
     };
 
     useEffect(() => {
+      if (showControls && autoHideControls && videoRef.current) {
+        if (timerControlsRef.current) {
+          clearTimeout(timerControlsRef.current);
+        }
+        timerControlsRef.current = setTimeout(() => {
+          if (timerControlsRef.current) {
+            clearTimeout(timerControlsRef.current);
+          }
+          if (!videoRef.current.paused && configMenu) {
+            setShowControls(false);
+          }
+        }, 2500);
+      }
+    }, [showControls, autoHideControls, videoRef]);
+
+    useEffect(() => {
+      setTouchDevice(isTouchDevice());
+
       let rate = rateSelected;
 
       const configs = getConfigs();
@@ -326,7 +234,23 @@ const HPlayer = React.forwardRef(
         rate = configs.userRate;
         setRateSelected(configs.userRate);
       }
+
+      if (configs && configs.volume && volume !== configs.volume) {
+        setVolume(configs.volume);
+      }
     }, []);
+
+    useEffect(() => {
+      if (touchDevice && videoRef.current) {
+        const progressEl: HTMLDivElement | null = document.querySelector(
+          '.controls-progress'
+        );
+        if (progressEl) {
+          progressEl.style.opacity = `1`;
+        }
+        setShowControls(true);
+      }
+    }, [touchDevice, videoRef]);
 
     useEffect(() => {
       if (!configMenu) {
@@ -334,6 +258,18 @@ const HPlayer = React.forwardRef(
         setOpenRate(false);
       }
     }, [configMenu]);
+
+    useEffect(() => {
+      if (openResolution) {
+        setOpenRate(false);
+      }
+    }, [openResolution]);
+
+    useEffect(() => {
+      if (openRate) {
+        setOpenResolution(false);
+      }
+    }, [openRate]);
 
     useEffect(() => {
       setSources(getSources(url));
@@ -358,6 +294,18 @@ const HPlayer = React.forwardRef(
         setResolutionSelected(resolutions[0]);
       }
     }, [resolutions]);
+
+    useEffect(() => {
+      if (refWrap.current) {
+        refWrap.current.addEventListener('fullscreenchange', (e) => {
+          if (document.fullscreenElement) {
+            setFullscreen(true);
+          } else {
+            setFullscreen(false);
+          }
+        });
+      }
+    }, [refWrap]);
 
     useEffect(() => {
       setResolutions(
@@ -496,6 +444,9 @@ const HPlayer = React.forwardRef(
 
         videoEl.addEventListener('play', (e: any) => {
           setPause(false);
+          setAutoHideControls(true);
+          setConfigMenu(false);
+          setShowControls(false);
           if (typeof onPlay === 'function') {
             onPlay(e);
           }
@@ -503,12 +454,17 @@ const HPlayer = React.forwardRef(
 
         videoEl.addEventListener('pause', (e: any) => {
           setPause(true);
+          setAutoHideControls(false);
+          setShowControls(true);
           if (typeof onPause === 'function') {
             onPause(e);
           }
         });
 
         videoEl.addEventListener('volumechange', (e: any) => {
+          saveConfigs({
+            volume: videoEl.volume * 100,
+          });
           if (videoRef.current) {
             setVolume(videoEl.volume * 100);
           }
@@ -612,21 +568,27 @@ const HPlayer = React.forwardRef(
     };
 
     const onClickFullscreen = () => {
-      const videoEl = videoRef.current as any;
-      if (videoEl.requestFullscreen) {
-        videoEl.requestFullscreen();
-      } else if (videoEl.mozRequestFullScreen) {
-        videoEl.mozRequestFullScreen();
-      } else if (videoEl.webkitRequestFullscreen) {
-        videoEl.webkitRequestFullscreen();
-      } else if (videoEl.msRequestFullscreen) {
-        videoEl.msRequestFullscreen();
+      const el = refWrap.current as any;
+
+      if (!document.fullscreenElement) {
+        if (el.requestFullscreen) {
+          el.requestFullscreen();
+        } else if (el.mozRequestFullScreen) {
+          el.mozRequestFullScreen();
+        } else if (el.webkitRequestFullscreen) {
+          el.webkitRequestFullscreen();
+        } else if (el.msRequestFullscreen) {
+          el.msRequestFullscreen();
+        }
+      } else {
+        document.exitFullscreen();
       }
     };
 
     const changeRate = (r: number) => {
       setRateSelected(r);
       setConfigMenu(false);
+      setConfigMenuTouch(false);
       saveConfigs({
         userRate: r,
       });
@@ -641,6 +603,7 @@ const HPlayer = React.forwardRef(
     const changeResolution = (r: string) => {
       setResolutionSelected(r);
       setConfigMenu(false);
+      setConfigMenuTouch(false);
       saveConfigs({
         userResolutionSelected: r,
       });
@@ -662,6 +625,7 @@ const HPlayer = React.forwardRef(
     const saveConfigs = (configs: {
       userResolutionSelected?: string;
       userRate?: number;
+      volume?: number;
     }) => {
       if (localStorage) {
         const current = getConfigs();
@@ -685,19 +649,28 @@ const HPlayer = React.forwardRef(
         return {
           userResolutionSelected: '',
           userRate: 1,
+          volume: 50,
         } as HPlayerConfig;
       }
     };
 
     const onMouseLeaveVideoWrap = () => {
-      if (configMenu) {
-        setConfigMenu(false);
+      if (!touchDevice) {
+        if (configMenu) {
+          setConfigMenu(false);
+        }
       }
     };
 
     return (
       <VideoWrap
-        className={[configMenu ? 'config-menu-show' : ''].join(' ')}
+        ref={refWrap}
+        className={[
+          configMenu ? 'config-menu-show' : '',
+          touchDevice ? 'touch' : '',
+          showControls ? 'show' : '',
+          pause ? 'paused' : '',
+        ].join(' ')}
         onMouseLeave={onMouseLeaveVideoWrap}
       >
         <video
@@ -714,12 +687,29 @@ const HPlayer = React.forwardRef(
         </video>
         {videoReady && (
           <Fragment>
-            <ControlsWrap className="controls-wrap" onClick={playOrPause} />
-            <ControlProgress className="controls-progress">
+            <ControlsWrap
+              className={[
+                'controls-wrap',
+                touchDevice ? 'touch' : '',
+                showControls ? 'show' : '',
+              ].join(' ')}
+              onClick={() => {
+                if (!touchDevice) {
+                  playOrPause();
+                } else {
+                  setShowControls(true);
+                }
+              }}
+            />
+            <ControlProgress
+              className={['controls-progress', touchDevice ? 'touch' : ''].join(
+                ' '
+              )}
+            >
               <Slider
                 value={progress}
                 onChange={onChangeProgress}
-                aria-labelledby="continuous-slider"
+                aria-labelledby="discrete-slider"
                 step={0.1}
               />
               <LinearProgress
@@ -728,25 +718,49 @@ const HPlayer = React.forwardRef(
                 valueBuffer={progressBuffer}
               />
             </ControlProgress>
-            <Controls className="controls">
-              <LeftControls>
-                <IconButton onClick={playOrPause}>
+            <ControlsTouch
+              className={[
+                'controls',
+                showControls ? 'show' : '',
+                touchDevice ? 'touch' : '',
+              ].join(' ')}
+              onClick={() => {
+                setShowControls(true);
+              }}
+            >
+              <IconButton onClick={playOrPause}>
+                {pause && <PlayArrowIcon />}
+                {!pause && <PauseIcon />}
+              </IconButton>
+            </ControlsTouch>
+            <Controls
+              className={[
+                'controls',
+                touchDevice ? 'touch' : '',
+                showControls ? 'show' : '',
+              ].join(' ')}
+            >
+              <LeftControls className={[touchDevice ? 'touch' : ''].join(' ')}>
+                <IconButton onClick={playOrPause} className="playOrPause">
                   {pause && <PlayArrowIcon />}
                   {!pause && <PauseIcon />}
                 </IconButton>
-                <VolumeWrap>
+                <VolumeWrap className={[touchDevice ? 'touch' : ''].join(' ')}>
                   <IconButton onClick={volumeToggle}>
                     {volume === 0 && <VolumeOffIcon />}
-                    {volume > 0 && volume < 100 && <VolumeDownIcon />}
-                    {volume === 100 && <VolumeUpIcon />}
+                    {volume > 0 && volume < 33 && <VolumeMuteIcon />}
+                    {volume > 33 && volume < 66 && <VolumeDownIcon />}
+                    {volume > 66 && volume <= 100 && <VolumeUpIcon />}
                   </IconButton>
-                  <VolumeSliderWrap className="slider-wrap">
+                  <div className="slider-wrap">
                     <Slider
                       value={volume}
                       onChange={onChangeVolume}
                       aria-labelledby="continuous-slider"
+                      min={0}
+                      max={100}
                     />
-                  </VolumeSliderWrap>
+                  </div>
                 </VolumeWrap>
                 <Timer>
                   {humanSeconds(currentTime)} / {humanSeconds(durationTime)}
@@ -758,7 +772,7 @@ const HPlayer = React.forwardRef(
                   <PictureInPictureAltIcon />
                 </IconButton>
                 <ConfigWrap>
-                  <ConfgMenu className="config-menu">
+                  <ConfigMenu className="config-menu">
                     <List component="nav" aria-label="resolutions" dense={true}>
                       {resolutions.length > 1 && (
                         <ListItem
@@ -769,7 +783,8 @@ const HPlayer = React.forwardRef(
                             <AspectRatioIcon color="inherit" />
                           </ListItemIcon>
                           <ListItemText
-                            primary={`${locale.quality} ${resolutionSelected}`}
+                            primary={locale.quality}
+                            secondary={resolutionSelected}
                           />
                           {openResolution ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
@@ -805,7 +820,8 @@ const HPlayer = React.forwardRef(
                           <SlowMotionVideoIcon color="inherit" />
                         </ListItemIcon>
                         <ListItemText
-                          primary={`${locale.playbackSpeed} ${rateSelected}x`}
+                          primary={locale.playbackSpeed}
+                          secondary={`${rateSelected}x`}
                         />
                         {openRate ? <ExpandLess /> : <ExpandMore />}
                       </ListItem>
@@ -824,17 +840,100 @@ const HPlayer = React.forwardRef(
                         </List>
                       </Collapse>
                     </List>
-                  </ConfgMenu>
+                  </ConfigMenu>
+                  <Drawer
+                    anchor="bottom"
+                    open={configMenuTouch}
+                    onClose={() => setConfigMenuTouch(false)}
+                  >
+                    <List
+                      component="nav"
+                      aria-label="resolutions"
+                      dense={false}
+                    >
+                      {resolutions.length > 1 && (
+                        <ListItem
+                          button
+                          onClick={() => setOpenResolution(!openResolution)}
+                        >
+                          <ListItemIcon>
+                            <AspectRatioIcon color="inherit" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={locale.quality}
+                            secondary={resolutionSelected}
+                          />
+                          {openResolution ? <ExpandLess /> : <ExpandMore />}
+                        </ListItem>
+                      )}
+                      <Collapse
+                        in={openResolution}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <List component="nav" disablePadding dense={false}>
+                          {resolutions.map((resolution, index) => (
+                            <ListItem
+                              key={index}
+                              button
+                              onClick={() => changeResolution(resolution)}
+                            >
+                              <ListItemIcon>
+                                <Checkbox
+                                  edge="start"
+                                  tabIndex={-1}
+                                  disableRipple
+                                  checked={resolution === resolutionSelected}
+                                  inputProps={{ 'aria-labelledby': '' }}
+                                />
+                              </ListItemIcon>
+                              <ListItemText primary={resolution} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Collapse>
+                      <ListItem button onClick={() => setOpenRate(!openRate)}>
+                        <ListItemIcon>
+                          <SlowMotionVideoIcon color="inherit" />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={locale.playbackSpeed}
+                          secondary={`${rateSelected}x`}
+                        />
+                        {openRate ? <ExpandLess /> : <ExpandMore />}
+                      </ListItem>
+                      <Collapse in={openRate} timeout="auto" unmountOnExit>
+                        <List component="nav" disablePadding dense={false}>
+                          {rates.map((rate, index) => (
+                            <ListItem
+                              key={index}
+                              button
+                              onClick={() => changeRate(rate)}
+                              selected={rate === rateSelected}
+                            >
+                              <ListItemText primary={rate} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Collapse>
+                    </List>
+                  </Drawer>
                   <Button
                     color="inherit"
-                    onClick={() => setConfigMenu(!configMenu)}
+                    onClick={() => {
+                      if (touchDevice) {
+                        setConfigMenuTouch(!configMenuTouch);
+                      } else {
+                        setConfigMenu(!configMenu);
+                      }
+                    }}
                   >
                     {!configMenu && <SettingsIcon />}
                     {configMenu && <CloseIcon />}
                   </Button>
                 </ConfigWrap>
                 <IconButton onClick={onClickFullscreen}>
-                  <FullscreenIcon />
+                  {!fullscreen ? <FullscreenIcon /> : <FullscreenExitIcon />}
                 </IconButton>
               </RightControls>
             </Controls>
