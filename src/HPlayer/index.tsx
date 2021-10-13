@@ -163,6 +163,7 @@ const HPlayer = React.forwardRef(
     };
 
     const [sources, setSources] = useState<HPlayerSource[]>(getSources(url));
+    const [enablePictureInPicture, setEnablePictureInPicture] = useState(true);
     const [autoHideControls, setAutoHideControls] = useState(true);
     const [showControls, setShowControls] = useState(false);
     const [touchDevice, setTouchDevice] = useState(false);
@@ -183,8 +184,6 @@ const HPlayer = React.forwardRef(
     const [pause, setPause] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
     const [durationTime, setDurationTime] = useState(0);
-    const [configMenu, setConfigMenu] = useState(false);
-    const [configMenuTouch, setConfigMenuTouch] = useState(false);
     const [volume, setVolume] = useState(50);
     const [progressBuffer, setProgressBuffer] = useState(0);
     const [progress, setProgress] = useState(0);
@@ -194,6 +193,8 @@ const HPlayer = React.forwardRef(
     const refWrap = useRef<HTMLDivElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
     const timerControlsRef = useRef<NodeJS.Timeout>(null);
+    const configMenu = useRef<boolean>(false);
+    const configMenuTouch = useRef<boolean>(false);
 
     const removeDuplicates = (arr: any[]) => {
       var obj: AnyObject = {};
@@ -216,12 +217,22 @@ const HPlayer = React.forwardRef(
           if (timerControlsRef.current) {
             clearTimeout(timerControlsRef.current);
           }
-          if (!videoRef.current.paused && configMenu) {
+          if (
+            !videoRef.current.paused &&
+            !configMenu.current &&
+            !configMenuTouch.current
+          ) {
             setShowControls(false);
           }
         }, 2500);
       }
-    }, [showControls, autoHideControls, videoRef]);
+    }, [
+      showControls,
+      autoHideControls,
+      videoRef,
+      configMenu.current,
+      configMenuTouch.current,
+    ]);
 
     useEffect(() => {
       setTouchDevice(isTouchDevice());
@@ -238,6 +249,10 @@ const HPlayer = React.forwardRef(
       if (configs && configs.volume && volume !== configs.volume) {
         setVolume(configs.volume);
       }
+
+      if ((document as any).pictureInPictureEnabled) {
+        setEnablePictureInPicture(true);
+      }
     }, []);
 
     useEffect(() => {
@@ -253,11 +268,11 @@ const HPlayer = React.forwardRef(
     }, [touchDevice, videoRef]);
 
     useEffect(() => {
-      if (!configMenu) {
+      if (!configMenu.current) {
         setOpenResolution(false);
         setOpenRate(false);
       }
-    }, [configMenu]);
+    }, [configMenu.current]);
 
     useEffect(() => {
       if (openResolution) {
@@ -445,7 +460,7 @@ const HPlayer = React.forwardRef(
         videoEl.addEventListener('play', (e: any) => {
           setPause(false);
           setAutoHideControls(true);
-          setConfigMenu(false);
+          configMenu.current = false;
           setShowControls(false);
           if (typeof onPlay === 'function') {
             onPlay(e);
@@ -563,8 +578,10 @@ const HPlayer = React.forwardRef(
     };
 
     const onClickPicture = async () => {
-      const videoEl = videoRef.current as any;
-      await videoEl.requestPictureInPicture();
+      if ((document as any).pictureInPictureEnabled) {
+        const videoEl = videoRef.current as any;
+        await videoEl.requestPictureInPicture();
+      }
     };
 
     const onClickFullscreen = () => {
@@ -587,8 +604,8 @@ const HPlayer = React.forwardRef(
 
     const changeRate = (r: number) => {
       setRateSelected(r);
-      setConfigMenu(false);
-      setConfigMenuTouch(false);
+      configMenu.current = false;
+      configMenuTouch.current = false;
       saveConfigs({
         userRate: r,
       });
@@ -602,8 +619,8 @@ const HPlayer = React.forwardRef(
 
     const changeResolution = (r: string) => {
       setResolutionSelected(r);
-      setConfigMenu(false);
-      setConfigMenuTouch(false);
+      configMenu.current = false;
+      configMenuTouch.current = false;
       saveConfigs({
         userResolutionSelected: r,
       });
@@ -656,8 +673,8 @@ const HPlayer = React.forwardRef(
 
     const onMouseLeaveVideoWrap = () => {
       if (!touchDevice) {
-        if (configMenu) {
-          setConfigMenu(false);
+        if (configMenu.current) {
+          configMenu.current = false;
         }
       }
     };
@@ -666,7 +683,7 @@ const HPlayer = React.forwardRef(
       <VideoWrap
         ref={refWrap}
         className={[
-          configMenu ? 'config-menu-show' : '',
+          configMenu.current ? 'config-menu-show' : '',
           touchDevice ? 'touch' : '',
           showControls ? 'show' : '',
           pause ? 'paused' : '',
@@ -768,9 +785,11 @@ const HPlayer = React.forwardRef(
               </LeftControls>
               <CenterControls></CenterControls>
               <RightControls>
-                <IconButton onClick={onClickPicture}>
-                  <PictureInPictureAltIcon />
-                </IconButton>
+                {enablePictureInPicture && (
+                  <IconButton onClick={onClickPicture}>
+                    <PictureInPictureAltIcon />
+                  </IconButton>
+                )}
                 <ConfigWrap>
                   <ConfigMenu className="config-menu">
                     <List component="nav" aria-label="resolutions" dense={true}>
@@ -843,8 +862,8 @@ const HPlayer = React.forwardRef(
                   </ConfigMenu>
                   <Drawer
                     anchor="bottom"
-                    open={configMenuTouch}
-                    onClose={() => setConfigMenuTouch(false)}
+                    open={configMenuTouch.current}
+                    onClose={() => (configMenuTouch.current = false)}
                   >
                     <List
                       component="nav"
@@ -922,14 +941,14 @@ const HPlayer = React.forwardRef(
                     color="inherit"
                     onClick={() => {
                       if (touchDevice) {
-                        setConfigMenuTouch(!configMenuTouch);
+                        configMenuTouch.current = !configMenuTouch.current;
                       } else {
-                        setConfigMenu(!configMenu);
+                        configMenu.current = !configMenu.current;
                       }
                     }}
                   >
-                    {!configMenu && <SettingsIcon />}
-                    {configMenu && <CloseIcon />}
+                    {!configMenu.current && <SettingsIcon />}
+                    {configMenu.current && <CloseIcon />}
                   </Button>
                 </ConfigWrap>
                 <IconButton onClick={onClickFullscreen}>

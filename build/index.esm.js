@@ -86,7 +86,7 @@ function __makeTemplateObject(cooked, raw) {
     return cooked;
 }
 
-var ControlsTouch = styled.div(templateObject_1$b || (templateObject_1$b = __makeTemplateObject(["\n  display: none;\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: calc(100% - 54px);\n  z-index: 3;\n  &.touch {\n    opacity: 0;\n    justify-content: center;\n    align-items: center;\n    button {\n      svg {\n        width: 64px;\n        height: 64px;\n        color: #fff;\n      }\n    }\n    &.show {\n      display: flex;\n      opacity: 1;\n    }\n  }\n"], ["\n  display: none;\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: calc(100% - 54px);\n  z-index: 3;\n  &.touch {\n    opacity: 0;\n    justify-content: center;\n    align-items: center;\n    button {\n      svg {\n        width: 64px;\n        height: 64px;\n        color: #fff;\n      }\n    }\n    &.show {\n      display: flex;\n      opacity: 1;\n    }\n  }\n"])));
+var ControlsTouch = styled.div(templateObject_1$b || (templateObject_1$b = __makeTemplateObject(["\n  display: none;\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: calc(100% - 54px);\n  z-index: 3;\n  &.touch {\n    opacity: 0;\n    justify-content: center;\n    align-items: center;\n    button {\n      margin-top: 5vw;\n      svg {\n        min-width: 64px;\n        min-height: 64px;\n        width: 20vw;\n        height: 20vw;\n        color: #fff;\n      }\n    }\n    &.show {\n      display: flex;\n      opacity: 1;\n    }\n  }\n"], ["\n  display: none;\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: calc(100% - 54px);\n  z-index: 3;\n  &.touch {\n    opacity: 0;\n    justify-content: center;\n    align-items: center;\n    button {\n      margin-top: 5vw;\n      svg {\n        min-width: 64px;\n        min-height: 64px;\n        width: 20vw;\n        height: 20vw;\n        color: #fff;\n      }\n    }\n    &.show {\n      display: flex;\n      opacity: 1;\n    }\n  }\n"])));
 var templateObject_1$b;
 
 var Controls = styled.div(templateObject_1$a || (templateObject_1$a = __makeTemplateObject(["\n  position: absolute;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  min-height: 64px;\n  width: 100%;\n  bottom: 0;\n  z-index: 3;\n  color: #fff;\n  .MuiIconButton-root {\n    color: #fff;\n  }\n  button {\n    transition: all 0.2s ease-in-out;\n    &:hover {\n      transform: scale(1.25);\n    }\n    &::active,\n    &:focus {\n      transform: scale(1.1);\n    }\n  }\n  &.touch {\n    opacity: 0;\n    &.show {\n      opacity: 1;\n    }\n  }\n"], ["\n  position: absolute;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  min-height: 64px;\n  width: 100%;\n  bottom: 0;\n  z-index: 3;\n  color: #fff;\n  .MuiIconButton-root {\n    color: #fff;\n  }\n  button {\n    transition: all 0.2s ease-in-out;\n    &:hover {\n      transform: scale(1.25);\n    }\n    &::active,\n    &:focus {\n      transform: scale(1.1);\n    }\n  }\n  &.touch {\n    opacity: 0;\n    &.show {\n      opacity: 1;\n    }\n  }\n"])));
@@ -161,12 +161,13 @@ var HPlayer = React.forwardRef(function (_a) {
         return s;
     };
     var _d = useState(getSources(url)), sources = _d[0], setSources = _d[1];
-    var _e = useState(true), autoHideControls = _e[0], setAutoHideControls = _e[1];
-    var _f = useState(false), showControls = _f[0], setShowControls = _f[1];
-    var _g = useState(false), touchDevice = _g[0], setTouchDevice = _g[1];
-    var _h = useState([]), resolutions = _h[0], setResolutions = _h[1];
-    var _j = useState(''), resolutionSelected = _j[0], setResolutionSelected = _j[1];
-    var _k = useState(1), rateSelected = _k[0], setRateSelected = _k[1];
+    var _e = useState(true), enablePictureInPicture = _e[0], setEnablePictureInPicture = _e[1];
+    var _f = useState(true), autoHideControls = _f[0], setAutoHideControls = _f[1];
+    var _g = useState(false), showControls = _g[0], setShowControls = _g[1];
+    var _h = useState(false), touchDevice = _h[0], setTouchDevice = _h[1];
+    var _j = useState([]), resolutions = _j[0], setResolutions = _j[1];
+    var _k = useState(''), resolutionSelected = _k[0], setResolutionSelected = _k[1];
+    var _l = useState(1), rateSelected = _l[0], setRateSelected = _l[1];
     var rates = useState([
         0.25,
         0.5,
@@ -177,21 +178,21 @@ var HPlayer = React.forwardRef(function (_a) {
         1.75,
         2,
     ])[0];
-    var _l = useState(false), fullscreen = _l[0], setFullscreen = _l[1];
-    var _m = useState(true), pause = _m[0], setPause = _m[1];
-    var _o = useState(0), currentTime = _o[0], setCurrentTime = _o[1];
-    var _p = useState(0), durationTime = _p[0], setDurationTime = _p[1];
-    var _q = useState(false), configMenu = _q[0], setConfigMenu = _q[1];
-    var _r = useState(false), configMenuTouch = _r[0], setConfigMenuTouch = _r[1];
-    var _s = useState(50), volume = _s[0], setVolume = _s[1];
-    var _t = useState(0), progressBuffer = _t[0], setProgressBuffer = _t[1];
-    var _u = useState(0), progress = _u[0], setProgress = _u[1];
-    var _v = useState(false), videoReady = _v[0], setVideoReady = _v[1];
-    var _w = useState(false), openResolution = _w[0], setOpenResolution = _w[1];
-    var _x = useState(false), openRate = _x[0], setOpenRate = _x[1];
+    var _m = useState(false), fullscreen = _m[0], setFullscreen = _m[1];
+    var _o = useState(true), pause = _o[0], setPause = _o[1];
+    var _p = useState(0), currentTime = _p[0], setCurrentTime = _p[1];
+    var _q = useState(0), durationTime = _q[0], setDurationTime = _q[1];
+    var _r = useState(50), volume = _r[0], setVolume = _r[1];
+    var _s = useState(0), progressBuffer = _s[0], setProgressBuffer = _s[1];
+    var _t = useState(0), progress = _t[0], setProgress = _t[1];
+    var _u = useState(false), videoReady = _u[0], setVideoReady = _u[1];
+    var _v = useState(false), openResolution = _v[0], setOpenResolution = _v[1];
+    var _w = useState(false), openRate = _w[0], setOpenRate = _w[1];
     var refWrap = useRef(null);
     var videoRef = useRef(null);
     var timerControlsRef = useRef(null);
+    var configMenu = useRef(false);
+    var configMenuTouch = useRef(false);
     var removeDuplicates = function (arr) {
         var obj = {};
         var ret_arr = [];
@@ -212,12 +213,20 @@ var HPlayer = React.forwardRef(function (_a) {
                 if (timerControlsRef.current) {
                     clearTimeout(timerControlsRef.current);
                 }
-                if (!videoRef.current.paused && configMenu) {
+                if (!videoRef.current.paused &&
+                    !configMenu.current &&
+                    !configMenuTouch.current) {
                     setShowControls(false);
                 }
             }, 2500);
         }
-    }, [showControls, autoHideControls, videoRef]);
+    }, [
+        showControls,
+        autoHideControls,
+        videoRef,
+        configMenu.current,
+        configMenuTouch.current,
+    ]);
     useEffect(function () {
         setTouchDevice(isTouchDevice());
         var rate = rateSelected;
@@ -228,6 +237,9 @@ var HPlayer = React.forwardRef(function (_a) {
         }
         if (configs && configs.volume && volume !== configs.volume) {
             setVolume(configs.volume);
+        }
+        if (document.pictureInPictureEnabled) {
+            setEnablePictureInPicture(true);
         }
     }, []);
     useEffect(function () {
@@ -240,11 +252,11 @@ var HPlayer = React.forwardRef(function (_a) {
         }
     }, [touchDevice, videoRef]);
     useEffect(function () {
-        if (!configMenu) {
+        if (!configMenu.current) {
             setOpenResolution(false);
             setOpenRate(false);
         }
-    }, [configMenu]);
+    }, [configMenu.current]);
     useEffect(function () {
         if (openResolution) {
             setOpenRate(false);
@@ -400,7 +412,7 @@ var HPlayer = React.forwardRef(function (_a) {
             videoEl.addEventListener('play', function (e) {
                 setPause(false);
                 setAutoHideControls(true);
-                setConfigMenu(false);
+                configMenu.current = false;
                 setShowControls(false);
                 if (typeof onPlay === 'function') {
                     onPlay(e);
@@ -507,11 +519,13 @@ var HPlayer = React.forwardRef(function (_a) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    if (!document.pictureInPictureEnabled) return [3 /*break*/, 2];
                     videoEl = videoRef.current;
                     return [4 /*yield*/, videoEl.requestPictureInPicture()];
                 case 1:
                     _a.sent();
-                    return [2 /*return*/];
+                    _a.label = 2;
+                case 2: return [2 /*return*/];
             }
         });
     }); };
@@ -537,8 +551,8 @@ var HPlayer = React.forwardRef(function (_a) {
     };
     var changeRate = function (r) {
         setRateSelected(r);
-        setConfigMenu(false);
-        setConfigMenuTouch(false);
+        configMenu.current = false;
+        configMenuTouch.current = false;
         saveConfigs({
             userRate: r,
         });
@@ -549,8 +563,8 @@ var HPlayer = React.forwardRef(function (_a) {
     };
     var changeResolution = function (r) {
         setResolutionSelected(r);
-        setConfigMenu(false);
-        setConfigMenuTouch(false);
+        configMenu.current = false;
+        configMenuTouch.current = false;
         saveConfigs({
             userResolutionSelected: r,
         });
@@ -588,13 +602,13 @@ var HPlayer = React.forwardRef(function (_a) {
     };
     var onMouseLeaveVideoWrap = function () {
         if (!touchDevice) {
-            if (configMenu) {
-                setConfigMenu(false);
+            if (configMenu.current) {
+                configMenu.current = false;
             }
         }
     };
     return (React.createElement(VideoWrap, { ref: refWrap, className: [
-            configMenu ? 'config-menu-show' : '',
+            configMenu.current ? 'config-menu-show' : '',
             touchDevice ? 'touch' : '',
             showControls ? 'show' : '',
             pause ? 'paused' : '',
@@ -651,8 +665,8 @@ var HPlayer = React.forwardRef(function (_a) {
                         humanSeconds(durationTime))),
                 React.createElement(CenterControls, null),
                 React.createElement(RightControls, null,
-                    React.createElement(IconButton, { onClick: onClickPicture },
-                        React.createElement(PictureInPictureAltIcon, null)),
+                    enablePictureInPicture && (React.createElement(IconButton, { onClick: onClickPicture },
+                        React.createElement(PictureInPictureAltIcon, null))),
                     React.createElement(ConfigWrap, null,
                         React.createElement(ConfigMenu, { className: "config-menu" },
                             React.createElement(List, { component: "nav", "aria-label": "resolutions", dense: true },
@@ -674,7 +688,7 @@ var HPlayer = React.forwardRef(function (_a) {
                                 React.createElement(Collapse, { in: openRate, timeout: "auto", unmountOnExit: true },
                                     React.createElement(List, { component: "nav", disablePadding: true, dense: true }, rates.map(function (rate, index) { return (React.createElement(ListItem, { key: index, button: true, onClick: function () { return changeRate(rate); }, selected: rate === rateSelected },
                                         React.createElement(ListItemText, { primary: rate }))); }))))),
-                        React.createElement(Drawer, { anchor: "bottom", open: configMenuTouch, onClose: function () { return setConfigMenuTouch(false); } },
+                        React.createElement(Drawer, { anchor: "bottom", open: configMenuTouch.current, onClose: function () { return (configMenuTouch.current = false); } },
                             React.createElement(List, { component: "nav", "aria-label": "resolutions", dense: false },
                                 resolutions.length > 1 && (React.createElement(ListItem, { button: true, onClick: function () { return setOpenResolution(!openResolution); } },
                                     React.createElement(ListItemIcon, null,
@@ -696,14 +710,14 @@ var HPlayer = React.forwardRef(function (_a) {
                                         React.createElement(ListItemText, { primary: rate }))); }))))),
                         React.createElement(Button, { color: "inherit", onClick: function () {
                                 if (touchDevice) {
-                                    setConfigMenuTouch(!configMenuTouch);
+                                    configMenuTouch.current = !configMenuTouch.current;
                                 }
                                 else {
-                                    setConfigMenu(!configMenu);
+                                    configMenu.current = !configMenu.current;
                                 }
                             } },
-                            !configMenu && React.createElement(SettingsIcon, null),
-                            configMenu && React.createElement(CloseIcon, null))),
+                            !configMenu.current && React.createElement(SettingsIcon, null),
+                            configMenu.current && React.createElement(CloseIcon, null))),
                     React.createElement(IconButton, { onClick: onClickFullscreen }, !fullscreen ? React.createElement(FullscreenIcon, null) : React.createElement(FullscreenExitIcon, null))))))));
 });
 

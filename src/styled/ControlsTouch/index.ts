@@ -12,9 +12,12 @@ const ControlsTouch = styled.div`
     justify-content: center;
     align-items: center;
     button {
+      margin-top: 5vw;
       svg {
-        width: 64px;
-        height: 64px;
+        min-width: 64px;
+        min-height: 64px;
+        width: 20vw;
+        height: 20vw;
         color: #fff;
       }
     }
