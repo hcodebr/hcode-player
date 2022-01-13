@@ -142,7 +142,7 @@ const HPlayer = React.forwardRef(
     onProgress?: (event: any) => void;
     onRateChange?: (event: any) => void;
     locale?: HPlayerLocale;
-  }) => {
+  }, ref: React.ForwardedRef<HTMLVideoElement>) => {
     const getSources = (
       value: string | HPlayerSource | HPlayerSource[]
     ): HPlayerSource[] => {
@@ -162,6 +162,7 @@ const HPlayer = React.forwardRef(
       return s;
     };
 
+    const videoRef = useRef<HTMLVideoElement>(ref as any);
     const [sources, setSources] = useState<HPlayerSource[]>(getSources(url));
     const [enablePictureInPicture, setEnablePictureInPicture] = useState(true);
     const [autoHideControls, setAutoHideControls] = useState(true);
@@ -180,6 +181,7 @@ const HPlayer = React.forwardRef(
       1.75,
       2,
     ]);
+    const [videoEl, setVideoEl] = useState<HTMLVideoElement | null>(null);
     const [fullscreen, setFullscreen] = useState(false);
     const [pause, setPause] = useState(true);
     const [currentTime, setCurrentTime] = useState(0);
@@ -191,7 +193,6 @@ const HPlayer = React.forwardRef(
     const [openResolution, setOpenResolution] = useState(false);
     const [openRate, setOpenRate] = useState(false);
     const refWrap = useRef<HTMLDivElement>(null);
-    const videoRef = useRef<HTMLVideoElement>(null);
     const timerControlsRef = useRef<NodeJS.Timeout>(null);
     const configMenu = useRef<boolean>(false);
     const configMenuTouch = useRef<boolean>(false);
@@ -209,7 +210,16 @@ const HPlayer = React.forwardRef(
     };
 
     useEffect(() => {
-      if (showControls && autoHideControls && videoRef.current) {
+
+      if (videoRef && videoRef.current) {
+        setVideoEl(videoRef.current as unknown as HTMLVideoElement);
+      }
+
+    }, [videoRef]);
+
+    useEffect(() => {
+      if (showControls && autoHideControls && videoEl) {
+
         if (timerControlsRef.current) {
           clearTimeout(timerControlsRef.current);
         }
@@ -217,12 +227,14 @@ const HPlayer = React.forwardRef(
           if (timerControlsRef.current) {
             clearTimeout(timerControlsRef.current);
           }
-          if (
-            !videoRef.current.paused &&
-            !configMenu.current &&
-            !configMenuTouch.current
-          ) {
-            setShowControls(false);
+          if (videoEl) {
+            if (
+              !videoEl.paused &&
+              !configMenu.current &&
+              !configMenuTouch.current
+            ) {
+              setShowControls(false);
+            }
           }
         }, 2500);
       }
@@ -232,6 +244,7 @@ const HPlayer = React.forwardRef(
       videoRef,
       configMenu.current,
       configMenuTouch.current,
+
     ]);
 
     useEffect(() => {
@@ -256,7 +269,7 @@ const HPlayer = React.forwardRef(
     }, []);
 
     useEffect(() => {
-      if (touchDevice && videoRef.current) {
+      if (touchDevice && videoRef) {
         const progressEl: HTMLDivElement | null = document.querySelector(
           '.controls-progress'
         );
@@ -327,8 +340,6 @@ const HPlayer = React.forwardRef(
         removeDuplicates(sources.map((s) => (s.resolution ? s.resolution : '')))
       );
 
-      const videoEl = videoRef.current as HTMLVideoElement;
-
       if (videoEl) {
         if (sources.length) {
           const configs = getConfigs();
@@ -356,14 +367,19 @@ const HPlayer = React.forwardRef(
           }
         }
       }
-    }, [sources]);
+    }, [sources, videoEl]);
 
     useEffect(() => {
       setVideoReady(true);
 
-      const videoEl = videoRef.current as HTMLVideoElement;
-
       if (videoEl) {
+
+        const configs = getConfigs();
+
+        if (configs && configs.volume) {
+          videoEl.volume = configs.volume / 100;
+        }
+
         videoEl.addEventListener('suspend', (e: any) => {
           if (typeof onSuspend === 'function') {
             onSuspend(e);
@@ -480,7 +496,7 @@ const HPlayer = React.forwardRef(
           saveConfigs({
             volume: videoEl.volume * 100,
           });
-          if (videoRef.current) {
+          if (videoRef) {
             setVolume(videoEl.volume * 100);
           }
           if (typeof onVolumeChange === 'function') {
@@ -520,7 +536,7 @@ const HPlayer = React.forwardRef(
           }
         });
 
-        videoRef.current?.addEventListener('ratechange', (e: any) => {
+        videoEl.addEventListener('ratechange', (e: any) => {
           if (rateSelected !== videoEl.playbackRate) {
             setRateSelected(videoEl.playbackRate);
             saveConfigs({
@@ -532,23 +548,25 @@ const HPlayer = React.forwardRef(
           }
         });
 
-        if (typeof onReady === 'function' && videoRef.current) {
-          onReady(videoRef.current);
+        if (typeof onReady === 'function' && videoRef) {
+          onReady(videoEl);
         }
       }
-    }, [videoRef]);
+
+    }, [videoEl]);
 
     const playOrPause = () => {
-      if (videoRef.current?.paused) {
-        videoRef.current?.play();
-      } else {
-        videoRef.current?.pause();
+      if (videoEl) {
+        if (videoEl.paused) {
+          videoEl.play();
+        } else {
+          videoEl.pause();
+        }
       }
     };
 
     const onChangeProgress = (_event: any, newValue: number | number[]) => {
       const value = newValue as number;
-      const videoEl = videoRef.current as HTMLVideoElement;
       if (videoEl) {
         videoEl.currentTime = (videoEl.duration * value) / 100;
       }
@@ -561,7 +579,6 @@ const HPlayer = React.forwardRef(
     };
 
     const applyVolume = (value: number) => {
-      const videoEl = videoRef.current as HTMLVideoElement;
       if (videoEl) {
         videoEl.volume = value / 100;
       }
@@ -579,8 +596,9 @@ const HPlayer = React.forwardRef(
 
     const onClickPicture = async () => {
       if ((document as any).pictureInPictureEnabled) {
-        const videoEl = videoRef.current as any;
-        await videoEl.requestPictureInPicture();
+        if (videoEl) {
+          await (videoEl as any).requestPictureInPicture();
+        }
       }
     };
 
@@ -610,8 +628,6 @@ const HPlayer = React.forwardRef(
         userRate: r,
       });
 
-      const videoEl = videoRef.current as HTMLVideoElement;
-
       if (videoEl) {
         videoEl.playbackRate = r;
       }
@@ -625,7 +641,6 @@ const HPlayer = React.forwardRef(
         userResolutionSelected: r,
       });
 
-      const videoEl = videoRef.current as HTMLVideoElement;
       if (videoEl) {
         const { paused, currentTime } = videoEl;
         const source = sources.find((s) => s.resolution === r);
@@ -661,6 +676,9 @@ const HPlayer = React.forwardRef(
         const parsed = JSON.parse(
           String(localStorage.getItem('hplayer-config'))
         );
+        if (typeof parsed !== 'object' || parsed === null) {
+          throw new Error("config invalid");
+        }
         return parsed as HPlayerConfig;
       } catch (e) {
         return {

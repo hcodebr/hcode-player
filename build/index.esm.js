@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, Fragment } from 'react';
+import React, { useRef, useState, useEffect, Fragment } from 'react';
 import { Slider, LinearProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Collapse, Checkbox, Drawer, Button } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
@@ -139,7 +139,7 @@ function isTouchDevice() {
         navigator.maxTouchPoints > 0 ||
         navigator.msMaxTouchPoints > 0);
 }
-var HPlayer = React.forwardRef(function (_a) {
+var HPlayer = React.forwardRef(function (_a, ref) {
     var url = _a.url, _b = _a.autoPlay, autoPlay = _b === void 0 ? false : _b, poster = _a.poster, onReady = _a.onReady, onSuspend = _a.onSuspend, onStalled = _a.onStalled, onSeeking = _a.onSeeking, onSeeked = _a.onSeeked, onEnded = _a.onEnded, onError = _a.onError, onCanPlayThrough = _a.onCanPlayThrough, onCanPlay = _a.onCanPlay, onAbort = _a.onAbort, onLoadedData = _a.onLoadedData, onLoadedMetaData = _a.onLoadedMetaData, onPlaying = _a.onPlaying, onLoadStart = _a.onLoadStart, onWaiting = _a.onWaiting, onTimeUpdate = _a.onTimeUpdate, onPlay = _a.onPlay, onPause = _a.onPause, onVolumeChange = _a.onVolumeChange, onDurationChange = _a.onDurationChange, onProgress = _a.onProgress, onRateChange = _a.onRateChange, _c = _a.locale, locale = _c === void 0 ? {
         quality: 'Quality',
         playbackSpeed: 'Playback speed',
@@ -160,6 +160,7 @@ var HPlayer = React.forwardRef(function (_a) {
         }
         return s;
     };
+    var videoRef = useRef(ref);
     var _d = useState(getSources(url)), sources = _d[0], setSources = _d[1];
     var _e = useState(true), enablePictureInPicture = _e[0], setEnablePictureInPicture = _e[1];
     var _f = useState(true), autoHideControls = _f[0], setAutoHideControls = _f[1];
@@ -178,18 +179,18 @@ var HPlayer = React.forwardRef(function (_a) {
         1.75,
         2,
     ])[0];
-    var _m = useState(false), fullscreen = _m[0], setFullscreen = _m[1];
-    var _o = useState(true), pause = _o[0], setPause = _o[1];
-    var _p = useState(0), currentTime = _p[0], setCurrentTime = _p[1];
-    var _q = useState(0), durationTime = _q[0], setDurationTime = _q[1];
-    var _r = useState(50), volume = _r[0], setVolume = _r[1];
-    var _s = useState(0), progressBuffer = _s[0], setProgressBuffer = _s[1];
-    var _t = useState(0), progress = _t[0], setProgress = _t[1];
-    var _u = useState(false), videoReady = _u[0], setVideoReady = _u[1];
-    var _v = useState(false), openResolution = _v[0], setOpenResolution = _v[1];
-    var _w = useState(false), openRate = _w[0], setOpenRate = _w[1];
+    var _m = useState(null), videoEl = _m[0], setVideoEl = _m[1];
+    var _o = useState(false), fullscreen = _o[0], setFullscreen = _o[1];
+    var _p = useState(true), pause = _p[0], setPause = _p[1];
+    var _q = useState(0), currentTime = _q[0], setCurrentTime = _q[1];
+    var _r = useState(0), durationTime = _r[0], setDurationTime = _r[1];
+    var _s = useState(50), volume = _s[0], setVolume = _s[1];
+    var _t = useState(0), progressBuffer = _t[0], setProgressBuffer = _t[1];
+    var _u = useState(0), progress = _u[0], setProgress = _u[1];
+    var _v = useState(false), videoReady = _v[0], setVideoReady = _v[1];
+    var _w = useState(false), openResolution = _w[0], setOpenResolution = _w[1];
+    var _x = useState(false), openRate = _x[0], setOpenRate = _x[1];
     var refWrap = useRef(null);
-    var videoRef = useRef(null);
     var timerControlsRef = useRef(null);
     var configMenu = useRef(false);
     var configMenuTouch = useRef(false);
@@ -205,7 +206,12 @@ var HPlayer = React.forwardRef(function (_a) {
         return ret_arr;
     };
     useEffect(function () {
-        if (showControls && autoHideControls && videoRef.current) {
+        if (videoRef && videoRef.current) {
+            setVideoEl(videoRef.current);
+        }
+    }, [videoRef]);
+    useEffect(function () {
+        if (showControls && autoHideControls && videoEl) {
             if (timerControlsRef.current) {
                 clearTimeout(timerControlsRef.current);
             }
@@ -213,10 +219,12 @@ var HPlayer = React.forwardRef(function (_a) {
                 if (timerControlsRef.current) {
                     clearTimeout(timerControlsRef.current);
                 }
-                if (!videoRef.current.paused &&
-                    !configMenu.current &&
-                    !configMenuTouch.current) {
-                    setShowControls(false);
+                if (videoEl) {
+                    if (!videoEl.paused &&
+                        !configMenu.current &&
+                        !configMenuTouch.current) {
+                        setShowControls(false);
+                    }
                 }
             }, 2500);
         }
@@ -243,7 +251,7 @@ var HPlayer = React.forwardRef(function (_a) {
         }
     }, []);
     useEffect(function () {
-        if (touchDevice && videoRef.current) {
+        if (touchDevice && videoRef) {
             var progressEl = document.querySelector('.controls-progress');
             if (progressEl) {
                 progressEl.style.opacity = "1";
@@ -299,7 +307,6 @@ var HPlayer = React.forwardRef(function (_a) {
     }, [refWrap]);
     useEffect(function () {
         setResolutions(removeDuplicates(sources.map(function (s) { return (s.resolution ? s.resolution : ''); })));
-        var videoEl = videoRef.current;
         if (videoEl) {
             if (sources.length) {
                 var configs_2 = getConfigs();
@@ -325,12 +332,14 @@ var HPlayer = React.forwardRef(function (_a) {
                 }
             }
         }
-    }, [sources]);
+    }, [sources, videoEl]);
     useEffect(function () {
-        var _a;
         setVideoReady(true);
-        var videoEl = videoRef.current;
         if (videoEl) {
+            var configs = getConfigs();
+            if (configs && configs.volume) {
+                videoEl.volume = configs.volume / 100;
+            }
             videoEl.addEventListener('suspend', function (e) {
                 if (typeof onSuspend === 'function') {
                     onSuspend(e);
@@ -430,7 +439,7 @@ var HPlayer = React.forwardRef(function (_a) {
                 saveConfigs({
                     volume: videoEl.volume * 100,
                 });
-                if (videoRef.current) {
+                if (videoRef) {
                     setVolume(videoEl.volume * 100);
                 }
                 if (typeof onVolumeChange === 'function') {
@@ -461,7 +470,7 @@ var HPlayer = React.forwardRef(function (_a) {
                     onProgress(e);
                 }
             });
-            (_a = videoRef.current) === null || _a === void 0 ? void 0 : _a.addEventListener('ratechange', function (e) {
+            videoEl.addEventListener('ratechange', function (e) {
                 if (rateSelected !== videoEl.playbackRate) {
                     setRateSelected(videoEl.playbackRate);
                     saveConfigs({
@@ -472,23 +481,23 @@ var HPlayer = React.forwardRef(function (_a) {
                     onRateChange(e);
                 }
             });
-            if (typeof onReady === 'function' && videoRef.current) {
-                onReady(videoRef.current);
+            if (typeof onReady === 'function' && videoRef) {
+                onReady(videoEl);
             }
         }
-    }, [videoRef]);
+    }, [videoEl]);
     var playOrPause = function () {
-        var _a, _b, _c;
-        if ((_a = videoRef.current) === null || _a === void 0 ? void 0 : _a.paused) {
-            (_b = videoRef.current) === null || _b === void 0 ? void 0 : _b.play();
-        }
-        else {
-            (_c = videoRef.current) === null || _c === void 0 ? void 0 : _c.pause();
+        if (videoEl) {
+            if (videoEl.paused) {
+                videoEl.play();
+            }
+            else {
+                videoEl.pause();
+            }
         }
     };
     var onChangeProgress = function (_event, newValue) {
         var value = newValue;
-        var videoEl = videoRef.current;
         if (videoEl) {
             videoEl.currentTime = (videoEl.duration * value) / 100;
         }
@@ -499,7 +508,6 @@ var HPlayer = React.forwardRef(function (_a) {
         setVolume(newValue);
     };
     var applyVolume = function (value) {
-        var videoEl = videoRef.current;
         if (videoEl) {
             videoEl.volume = value / 100;
         }
@@ -515,12 +523,11 @@ var HPlayer = React.forwardRef(function (_a) {
         }
     };
     var onClickPicture = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var videoEl;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     if (!document.pictureInPictureEnabled) return [3 /*break*/, 2];
-                    videoEl = videoRef.current;
+                    if (!videoEl) return [3 /*break*/, 2];
                     return [4 /*yield*/, videoEl.requestPictureInPicture()];
                 case 1:
                     _a.sent();
@@ -556,7 +563,6 @@ var HPlayer = React.forwardRef(function (_a) {
         saveConfigs({
             userRate: r,
         });
-        var videoEl = videoRef.current;
         if (videoEl) {
             videoEl.playbackRate = r;
         }
@@ -568,7 +574,6 @@ var HPlayer = React.forwardRef(function (_a) {
         saveConfigs({
             userResolutionSelected: r,
         });
-        var videoEl = videoRef.current;
         if (videoEl) {
             var paused = videoEl.paused, currentTime_1 = videoEl.currentTime;
             var source = sources.find(function (s) { return s.resolution === r; });
@@ -590,6 +595,9 @@ var HPlayer = React.forwardRef(function (_a) {
     var getConfigs = function () {
         try {
             var parsed = JSON.parse(String(localStorage.getItem('hplayer-config')));
+            if (typeof parsed !== 'object' || parsed === null) {
+                throw new Error("config invalid");
+            }
             return parsed;
         }
         catch (e) {

@@ -16,7 +16,7 @@
     "postbuild": "npm run new:version",
     "prenew:version": "git add --all && git commit -m publish",
     "new:version": "npm version patch",
-    "storybook": "start-storybook -p 6006",
+    "dev": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "preprod": "npm run build",
     "prod": "npm publish",

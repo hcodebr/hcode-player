@@ -45,5 +45,5 @@ declare const HPlayer: React.ForwardRefExoticComponent<{
     onProgress?: (event: any) => void;
     onRateChange?: (event: any) => void;
     locale?: HPlayerLocale;
-} & React.RefAttributes<unknown>>;
+} & React.RefAttributes<HTMLVideoElement>>;
 export default HPlayer;
