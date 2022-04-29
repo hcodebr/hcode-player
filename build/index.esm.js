@@ -484,6 +484,20 @@ var HPlayer = React.forwardRef(function (_a, ref) {
             if (typeof onReady === 'function' && videoRef) {
                 onReady(videoEl);
             }
+            var _a = getConfigs(), userRate = _a.userRate, volume_1 = _a.volume, userResolutionSelected_1 = _a.userResolutionSelected;
+            videoEl.playbackRate = userRate;
+            applyVolume(volume_1);
+            setVolume(volume_1);
+            setResolutionSelected(userResolutionSelected_1);
+            var paused = videoEl.paused, currentTime_1 = videoEl.currentTime;
+            var source = sources.find(function (s) { return s.resolution === userResolutionSelected_1; });
+            if (source) {
+                videoEl.src = source.url;
+                videoEl.currentTime = currentTime_1;
+                if (!paused) {
+                    videoEl.play();
+                }
+            }
         }
     }, [videoEl]);
     var playOrPause = function () {
@@ -575,11 +589,11 @@ var HPlayer = React.forwardRef(function (_a, ref) {
             userResolutionSelected: r,
         });
         if (videoEl) {
-            var paused = videoEl.paused, currentTime_1 = videoEl.currentTime;
+            var paused = videoEl.paused, currentTime_2 = videoEl.currentTime;
             var source = sources.find(function (s) { return s.resolution === r; });
             if (source) {
                 videoEl.src = source.url;
-                videoEl.currentTime = currentTime_1;
+                videoEl.currentTime = currentTime_2;
                 if (!paused) {
                     videoEl.play();
                 }
@@ -593,19 +607,20 @@ var HPlayer = React.forwardRef(function (_a, ref) {
         }
     };
     var getConfigs = function () {
+        var defaultValues = {
+            userResolutionSelected: '',
+            userRate: 1,
+            volume: 50,
+        };
         try {
             var parsed = JSON.parse(String(localStorage.getItem('hplayer-config')));
             if (typeof parsed !== 'object' || parsed === null) {
-                throw new Error("config invalid");
+                throw new Error('config invalid');
             }
-            return parsed;
+            return Object.assign(defaultValues, parsed);
         }
         catch (e) {
-            return {
-                userResolutionSelected: '',
-                userRate: 1,
-                volume: 50,
-            };
+            return defaultValues;
         }
     };
     var onMouseLeaveVideoWrap = function () {

@@ -85,64 +85,67 @@ export function isTouchDevice() {
 }
 
 const HPlayer = React.forwardRef(
-  ({
-    url,
-    autoPlay = false,
-    poster,
-    onReady,
-    onSuspend,
-    onStalled,
-    onSeeking,
-    onSeeked,
-    onEnded,
-    onError,
-    onCanPlayThrough,
-    onCanPlay,
-    onAbort,
-    onLoadedData,
-    onLoadedMetaData,
-    onPlaying,
-    onLoadStart,
-    onWaiting,
-    onTimeUpdate,
-    onPlay,
-    onPause,
-    onVolumeChange,
-    onDurationChange,
-    onProgress,
-    onRateChange,
-    locale = {
-      quality: 'Quality',
-      playbackSpeed: 'Playback speed',
+  (
+    {
+      url,
+      autoPlay = false,
+      poster,
+      onReady,
+      onSuspend,
+      onStalled,
+      onSeeking,
+      onSeeked,
+      onEnded,
+      onError,
+      onCanPlayThrough,
+      onCanPlay,
+      onAbort,
+      onLoadedData,
+      onLoadedMetaData,
+      onPlaying,
+      onLoadStart,
+      onWaiting,
+      onTimeUpdate,
+      onPlay,
+      onPause,
+      onVolumeChange,
+      onDurationChange,
+      onProgress,
+      onRateChange,
+      locale = {
+        quality: 'Quality',
+        playbackSpeed: 'Playback speed',
+      },
+    }: {
+      url: string | HPlayerSource | HPlayerSource[];
+      autoPlay?: boolean;
+      poster?: string;
+      onReady?: (video: HTMLVideoElement) => void;
+      onSuspend?: (event: any) => void;
+      onStalled?: (event: any) => void;
+      onSeeking?: (event: any) => void;
+      onSeeked?: (event: any) => void;
+      onEnded?: (event: any) => void;
+      onError?: (event: any) => void;
+      onCanPlayThrough?: (event: any) => void;
+      onCanPlay?: (event: any) => void;
+      onAbort?: (event: any) => void;
+      onLoadedData?: (event: any) => void;
+      onLoadedMetaData?: (event: any) => void;
+      onPlaying?: (event: any) => void;
+      onLoadStart?: (event: any) => void;
+      onWaiting?: (event: any) => void;
+      onTimeUpdate?: (event: any) => void;
+      onPlay?: (event: any) => void;
+      onPause?: (event: any) => void;
+      onVolumeChange?: (event: any) => void;
+      onDurationChange?: (event: any) => void;
+      onProgress?: (event: any) => void;
+      onRateChange?: (event: any) => void;
+      locale?: HPlayerLocale;
     },
-  }: {
-    url: string | HPlayerSource | HPlayerSource[];
-    autoPlay?: boolean;
-    poster?: string;
-    onReady?: (video: HTMLVideoElement) => void;
-    onSuspend?: (event: any) => void;
-    onStalled?: (event: any) => void;
-    onSeeking?: (event: any) => void;
-    onSeeked?: (event: any) => void;
-    onEnded?: (event: any) => void;
-    onError?: (event: any) => void;
-    onCanPlayThrough?: (event: any) => void;
-    onCanPlay?: (event: any) => void;
-    onAbort?: (event: any) => void;
-    onLoadedData?: (event: any) => void;
-    onLoadedMetaData?: (event: any) => void;
-    onPlaying?: (event: any) => void;
-    onLoadStart?: (event: any) => void;
-    onWaiting?: (event: any) => void;
-    onTimeUpdate?: (event: any) => void;
-    onPlay?: (event: any) => void;
-    onPause?: (event: any) => void;
-    onVolumeChange?: (event: any) => void;
-    onDurationChange?: (event: any) => void;
-    onProgress?: (event: any) => void;
-    onRateChange?: (event: any) => void;
-    locale?: HPlayerLocale;
-  }, ref: React.ForwardedRef<HTMLVideoElement>) => {
+    ref: React.ForwardedRef<HTMLVideoElement>
+  ) => {
     const getSources = (
       value: string | HPlayerSource | HPlayerSource[]
     ): HPlayerSource[] => {
@@ -210,16 +213,13 @@ const HPlayer = React.forwardRef(
     };
 
     useEffect(() => {
-
       if (videoRef && videoRef.current) {
-        setVideoEl(videoRef.current as unknown as HTMLVideoElement);
+        setVideoEl((videoRef.current as unknown) as HTMLVideoElement);
       }
-
     }, [videoRef]);
 
     useEffect(() => {
       if (showControls && autoHideControls && videoEl) {
-
         if (timerControlsRef.current) {
           clearTimeout(timerControlsRef.current);
         }
@@ -244,7 +244,6 @@ const HPlayer = React.forwardRef(
       videoRef,
       configMenu.current,
       configMenuTouch.current,
-
     ]);
 
     useEffect(() => {
@@ -373,7 +372,6 @@ const HPlayer = React.forwardRef(
       setVideoReady(true);
 
       if (videoEl) {
-
         const configs = getConfigs();
 
         if (configs && configs.volume) {
@@ -551,8 +549,26 @@ const HPlayer = React.forwardRef(
         if (typeof onReady === 'function' && videoRef) {
           onReady(videoEl);
         }
-      }
 
+        const { userRate, volume, userResolutionSelected } = getConfigs();
+
+        videoEl.playbackRate = userRate;
+        applyVolume(volume);
+        setVolume(volume);
+
+        setResolutionSelected(userResolutionSelected);
+        const { paused, currentTime } = videoEl;
+        const source = sources.find(
+          (s) => s.resolution === userResolutionSelected
+        );
+        if (source) {
+          videoEl.src = source.url;
+          videoEl.currentTime = currentTime;
+          if (!paused) {
+            videoEl.play();
+          }
+        }
+      }
     }, [videoEl]);
 
     const playOrPause = () => {
@@ -672,20 +688,23 @@ const HPlayer = React.forwardRef(
     };
 
     const getConfigs = (): HPlayerConfig => {
+      const defaultValues = {
+        userResolutionSelected: '',
+        userRate: 1,
+        volume: 50,
+      } as HPlayerConfig;
+
       try {
-        const parsed = JSON.parse(
+        let parsed = JSON.parse(
           String(localStorage.getItem('hplayer-config'))
-        );
+        ) as HPlayerConfig;
         if (typeof parsed !== 'object' || parsed === null) {
-          throw new Error("config invalid");
+          throw new Error('config invalid');
         }
-        return parsed as HPlayerConfig;
+
+        return Object.assign(defaultValues, parsed);
       } catch (e) {
-        return {
-          userResolutionSelected: '',
-          userRate: 1,
-          volume: 50,
-        } as HPlayerConfig;
+        return defaultValues;
       }
     };
 
