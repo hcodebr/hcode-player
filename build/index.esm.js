@@ -305,6 +305,24 @@ var HPlayer = React.forwardRef(function (_a, ref) {
             });
         }
     }, [refWrap]);
+    var setSavedConfigs = function () {
+        if (videoEl) {
+            var _a = getConfigs(), userRate = _a.userRate, volume_1 = _a.volume, userResolutionSelected_1 = _a.userResolutionSelected;
+            videoEl.playbackRate = userRate;
+            applyVolume(volume_1);
+            setVolume(volume_1);
+            setResolutionSelected(userResolutionSelected_1);
+            var paused = videoEl.paused, currentTime_1 = videoEl.currentTime;
+            var source = sources.find(function (s) { return s.resolution === userResolutionSelected_1; });
+            if (source) {
+                videoEl.src = source.url;
+                videoEl.currentTime = currentTime_1;
+                if (!paused) {
+                    videoEl.play();
+                }
+            }
+        }
+    };
     useEffect(function () {
         setResolutions(removeDuplicates(sources.map(function (s) { return (s.resolution ? s.resolution : ''); })));
         if (videoEl) {
@@ -316,6 +334,7 @@ var HPlayer = React.forwardRef(function (_a, ref) {
                         videoEl.currentTime = 0;
                         videoEl.src = source.url;
                         if (!videoEl.paused || autoPlay) {
+                            setSavedConfigs();
                             videoEl.play();
                         }
                     }
@@ -326,6 +345,7 @@ var HPlayer = React.forwardRef(function (_a, ref) {
                         videoEl.currentTime = 0;
                         videoEl.src = source.url;
                         if (!videoEl.paused || autoPlay) {
+                            setSavedConfigs();
                             videoEl.play();
                         }
                     }
@@ -484,20 +504,7 @@ var HPlayer = React.forwardRef(function (_a, ref) {
             if (typeof onReady === 'function' && videoRef) {
                 onReady(videoEl);
             }
-            var _a = getConfigs(), userRate = _a.userRate, volume_1 = _a.volume, userResolutionSelected_1 = _a.userResolutionSelected;
-            videoEl.playbackRate = userRate;
-            applyVolume(volume_1);
-            setVolume(volume_1);
-            setResolutionSelected(userResolutionSelected_1);
-            var paused = videoEl.paused, currentTime_1 = videoEl.currentTime;
-            var source = sources.find(function (s) { return s.resolution === userResolutionSelected_1; });
-            if (source) {
-                videoEl.src = source.url;
-                videoEl.currentTime = currentTime_1;
-                if (!paused) {
-                    videoEl.play();
-                }
-            }
+            setSavedConfigs();
         }
     }, [videoEl]);
     var playOrPause = function () {

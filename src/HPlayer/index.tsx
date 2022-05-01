@@ -334,6 +334,29 @@ const HPlayer = React.forwardRef(
       }
     }, [refWrap]);
 
+    const setSavedConfigs = () => {
+      if (videoEl) {
+        const { userRate, volume, userResolutionSelected } = getConfigs();
+
+        videoEl.playbackRate = userRate;
+        applyVolume(volume);
+        setVolume(volume);
+
+        setResolutionSelected(userResolutionSelected);
+        const { paused, currentTime } = videoEl;
+        const source = sources.find(
+          (s) => s.resolution === userResolutionSelected
+        );
+        if (source) {
+          videoEl.src = source.url;
+          videoEl.currentTime = currentTime;
+          if (!paused) {
+            videoEl.play();
+          }
+        }
+      }
+    };
+
     useEffect(() => {
       setResolutions(
         removeDuplicates(sources.map((s) => (s.resolution ? s.resolution : '')))
@@ -351,6 +374,7 @@ const HPlayer = React.forwardRef(
               videoEl.currentTime = 0;
               videoEl.src = source.url;
               if (!videoEl.paused || autoPlay) {
+                setSavedConfigs();
                 videoEl.play();
               }
             }
@@ -360,6 +384,7 @@ const HPlayer = React.forwardRef(
               videoEl.currentTime = 0;
               videoEl.src = source.url;
               if (!videoEl.paused || autoPlay) {
+                setSavedConfigs();
                 videoEl.play();
               }
             }
@@ -550,24 +575,7 @@ const HPlayer = React.forwardRef(
           onReady(videoEl);
         }
 
-        const { userRate, volume, userResolutionSelected } = getConfigs();
-
-        videoEl.playbackRate = userRate;
-        applyVolume(volume);
-        setVolume(volume);
-
-        setResolutionSelected(userResolutionSelected);
-        const { paused, currentTime } = videoEl;
-        const source = sources.find(
-          (s) => s.resolution === userResolutionSelected
-        );
-        if (source) {
-          videoEl.src = source.url;
-          videoEl.currentTime = currentTime;
-          if (!paused) {
-            videoEl.play();
-          }
-        }
+        setSavedConfigs();
       }
     }, [videoEl]);
 
